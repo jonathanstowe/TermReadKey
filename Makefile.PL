@@ -1,4 +1,4 @@
-# Term::ReadKey Makefile.PL Version 2.13
+# Term::ReadKey Makefile.PL Version 2.14
 
 use ExtUtils::MakeMaker;
 use Carp;
@@ -15,6 +15,8 @@ if( $mm_version < 3.5 ) {
 	VERSION_FROM => "ReadKey.pm",
 	PM => { "ReadKey.pm" => '$(INST_LIBDIR)/ReadKey.pm'},
 
+	'dist' => { COMPRESS=>"gzip", SUFFIX=>"gz" },
+        
 # Uncomment these to allow testing of sgtty under Linux. Not needed normally.
 #	INC => "-I/usr/include/bsd",
 #	LIBS => "-lbsd"

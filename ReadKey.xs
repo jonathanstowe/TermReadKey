@@ -13,6 +13,9 @@
 
  Written by Kenneth Albanowski on Thu Oct  6 11:42:20 EDT 1994
  Contact at kjahds@kjahds.com or CIS:70705,126
+
+ Version 2.14, Sun Mar 28 23:26:13 EST 1999
+    ppport.h 1.007 fixed for 5.005_55.
  
  Version 2.13, Wed Mar 24 20:46:06 EST 1999
  	Adapted to ppport.h 1.006.
@@ -192,7 +195,7 @@
 #		define DONT_USE_NODELAY
 #		define USE_WIN32
 #		include <io.h>
-#		if defined(_get_osfhandle) && (PERL_PATCHLEVEL == 4) && (PERL_SUBVERSION < 5)
+#		if defined(_get_osfhandle) && (PERL_VERSION == 4) && (PERL_SUBVERSION < 5)
 #			undef _get_osfhandle
 #			if defined(_MSC_VER)
 #				define level _cnt
@@ -733,6 +736,7 @@ void ReadMode(file,mode)
 FILE * file;
 int mode;
 {
+	dTHR;
 	int handle;
 	int firsttime;
 	int oldmode;
