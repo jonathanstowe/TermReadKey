@@ -5,6 +5,8 @@
 #include "XSUB.h"
 #include "ppport.h"
 
+#define InputStream PerlIO *
+
 /*******************************************************************
 
  Copyright (C) 1994,1995,1996,1997 Kenneth Albanowski. Unlimited
@@ -13,6 +15,11 @@
 
  Written by Kenneth Albanowski on Thu Oct  6 11:42:20 EDT 1994
  Contact at kjahds@kjahds.com or CIS:70705,126
+
+ Version 2.15, Sun Nov  4 15:02:37 GMT 2001 (jns)
+    Applied the patch in 
+    http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2001-01/msg01588.html
+    for PerlIO compatibility.
 
  Version 2.14, Sun Mar 28 23:26:13 EST 1999
     ppport.h 1.007 fixed for 5.005_55.
@@ -106,7 +113,7 @@
 	too. Added Sun TermSize support. (Hope I got it right.)
 
  Version 1.5, Fri Dec  9 16:07:49 EST 1994:
-	Added SetTermSize, GetSpeeds, Get/SetControlChars, FILE support.
+	Added SetTermSize, GetSpeeds, Get/SetControlChars, PerlIO support.
 
  Version 1.01, Thu Oct 20 23:32:39 EDT 1994:
 	Added Select_fd_set_t casts to select() call.
@@ -321,50 +328,50 @@
 		            I think not for now. */
 
 
-#define STDIN IoIFP(GvIOp(PL_stdingv))
+#define STDIN PerlIO_stdin()
 
 #include "cchars.h"
 
 
-int GetTermSizeVIO _((FILE * file, 
+int GetTermSizeVIO _((PerlIO * file,
 	int * retwidth, int * retheight, 
 	int * xpix, int * ypix));
 
-int GetTermSizeGWINSZ _((FILE * file, 
+int GetTermSizeGWINSZ _((PerlIO * file,
 	int * retwidth, int * retheight, 
 	int * xpix, int * ypix));
 
-int GetTermSizeGSIZE _((FILE * file, 
+int GetTermSizeGSIZE _((PerlIO * file,
 	int * retwidth, int * retheight, 
 	int * xpix, int * ypix));
 
-int GetTermSizeWin32 _((FILE * file,
+int GetTermSizeWin32 _((PerlIO * file,
 	int * retwidth, int * retheight,
 	int * xpix, int * ypix));
 
-int SetTerminalSize _((FILE * file, 
+int SetTerminalSize _((PerlIO * file,
 	int width, int height, 
 	int xpix, int ypix));
 
-void ReadMode _((FILE * file,int mode));
+void ReadMode _((PerlIO * file,int mode));
 
-int pollfile _((FILE * file, double delay));
+int pollfile _((PerlIO * file, double delay));
 
-int setnodelay _((FILE * file, int mode));
+int setnodelay _((PerlIO * file, int mode));
 
-int selectfile _((FILE * file, double delay));
+int selectfile _((PerlIO * file, double delay));
 
-int Win32PeekChar _((FILE * file, double delay, char * key));
+int Win32PeekChar _((PerlIO * file, double delay, char * key));
 
-int getspeed _((FILE * file, I32 *in, I32 * out ));
+int getspeed _((PerlIO * file, I32 *in, I32 * out ));
 
 
 #ifdef VIOMODE
 int GetTermSizeVIO(file,retwidth,retheight,xpix,ypix)
-FILE * file;
+PerlIO * file;
 int *retwidth, *retheight, *xpix, *ypix;
 {
-	/*int handle=fileno(file);
+	/*int handle=PerlIO_fileno(file);
 
         static VIOMODEINFO *modeinfo = NULL;
 
@@ -385,7 +392,7 @@ int *retwidth, *retheight, *xpix, *ypix;
 }
 #else
 int GetTermSizeVIO(file,retwidth,retheight,xpix,ypix)
-FILE * file;
+PerlIO * file;
 int *retwidth, *retheight, *xpix, *ypix;
 {
 	croak("TermSizeVIO is not implemented on this architecture");
@@ -395,10 +402,10 @@ int *retwidth, *retheight, *xpix, *ypix;
 
 #if defined(TIOCGWINSZ) && !defined(DONT_USE_GWINSZ)
 int GetTermSizeGWINSZ(file,retwidth,retheight,xpix,ypix)
-FILE * file;
+PerlIO * file;
 int *retwidth, *retheight, *xpix, *ypix;
 {
-	int handle=fileno(file);
+	int handle=PerlIO_fileno(file);
 	struct winsize w;
 
 	if (ioctl (handle, TIOCGWINSZ, &w) == 0) {
@@ -412,7 +419,7 @@ int *retwidth, *retheight, *xpix, *ypix;
 }
 #else
 int GetTermSizeGWINSZ(file,retwidth,retheight,xpix,ypix)
-FILE * file;
+PerlIO * file;
 int *retwidth, *retheight, *xpix, *ypix;
 {
 	croak("TermSizeGWINSZ is not implemented on this architecture");
@@ -421,10 +428,10 @@ int *retwidth, *retheight, *xpix, *ypix;
 
 #if (!defined(TIOCGWINSZ) || defined(DONT_USE_GWINSZ)) && (defined(TIOCGSIZE) && !defined(DONT_USE_GSIZE))
 int GetTermSizeGSIZE(file,retwidth,retheight,xpix,ypix)
-FILE * file;
+PerlIO * file;
 int *retwidth, *retheight, *xpix, *ypix;
 {
-	int handle=fileno(file);
+	int handle=PerlIO_fileno(file);
 
 	struct ttysize w;
 
@@ -438,7 +445,7 @@ int *retwidth, *retheight, *xpix, *ypix;
 }
 #else
 int GetTermSizeGSIZE(file,retwidth,retheight,xpix,ypix)
-FILE * file;
+PerlIO * file;
 int *retwidth, *retheight, *xpix, *ypix;
 {
 	croak("TermSizeGSIZE is not implemented on this architecture");
@@ -447,10 +454,10 @@ int *retwidth, *retheight, *xpix, *ypix;
 
 #ifdef USE_WIN32
 int GetTermSizeWin32(file,retwidth,retheight,xpix,ypix)
-FILE * file;
+PerlIO * file;
 int *retwidth, *retheight, *xpix, *ypix;
 {
-	int handle=fileno(file);
+	int handle=PerlIO_fileno(file);
 	HANDLE whnd = (HANDLE)_get_osfhandle(handle);
 	CONSOLE_SCREEN_BUFFER_INFO info;
 
@@ -472,7 +479,7 @@ int *retwidth, *retheight, *xpix, *ypix;
 }
 #else
 int GetTermSizeWin32(file,retwidth,retheight,xpix,ypix)
-FILE * file;
+PerlIO * file;
 int *retwidth, *retheight, *xpix, *ypix;
 {
 	croak("TermSizeWin32 is not implemented on this architecture");
@@ -499,11 +506,11 @@ int termsizeoptions() {
 
 
 int SetTerminalSize(file, width, height, xpix, ypix)
-FILE *file;
+PerlIO *file;
 int width, height, xpix, ypix;
 {
 	char buffer[10];
-	int handle=fileno(file);
+	int handle=PerlIO_fileno(file);
 
 #ifdef VIOMODE
         return -1;
@@ -624,10 +631,10 @@ I32 terminal_speeds[] = {
 };
 
 int getspeed(file, in, out)
-FILE * file;
+PerlIO * file;
 I32 *in, *out;
 {
-	int handle=fileno(file);
+	int handle=PerlIO_fileno(file);
 	int i;
 #       ifdef I_TERMIOS
 	/* Posixy stuff */
@@ -733,7 +740,7 @@ HV * filehash; /* Used to store the original terminal settings for each handle*/
 HV * modehash; /* Used to record the current terminal "mode" for each handle*/
 
 void ReadMode(file,mode)
-FILE * file;
+PerlIO * file;
 int mode;
 {
 	dTHR;
@@ -744,7 +751,7 @@ int mode;
 	struct tbuffer	savebuf;
 
 	
-	handle=fileno(file);
+	handle=PerlIO_fileno(file);
 	
 	firsttime=!hv_exists(filehash, (char*)&handle, sizeof(int));
 
@@ -1383,10 +1390,10 @@ int mode;
 
  /* Make use of a recent addition to Configure, if possible */
 # ifdef USE_STDIO_PTR
-#  define FCOUNT(f) FILE_cnt(f)
+#  define FCOUNT(f) PerlIO_get_cnt(f)
 # else
-
   /* This bit borrowed from pp_sys.c. Complain to Larry if it's broken. */
+  /* If any of this works PerlIO_get_cnt() will too ... NI-S */
 #  if defined(USE_STD_STDIO) || defined(atarist) /* this will work with atariST */
 #   define FBASE(f) ((f)->_base)
 #   define FSIZE(f) ((f)->_cnt + ((f)->_ptr - (f)->_base))
@@ -1419,20 +1426,18 @@ DONT_USE_SELECT. */
 
 #ifdef Have_select
 int selectfile(file,delay)
-FILE * file;
+PerlIO * file;
 double delay;
 {
 	struct timeval t;
-	int handle=fileno(file);
+	int handle=PerlIO_fileno(file);
 
 	/*char buf[32];    
 	Select_fd_set_t fd=(Select_fd_set_t)&buf[0];*/
 
 	fd_set fd;
-#	ifdef FCOUNT
-	if( FCOUNT(file)>0 )
+	if (PerlIO_fast_gets(file) && PerlIO_get_cnt(file) > 0)
 		return 1;
-#	endif
 
 	/*t.tv_sec=t.tv_usec=0;*/
 
@@ -1452,7 +1457,7 @@ double delay;
 
 #else
 int selectfile(file, delay)
-FILE * file;
+PerlIO * file;
 double delay;
 {
 	croak("select is not supported on this architecture");
@@ -1462,10 +1467,10 @@ double delay;
 
 #ifdef Have_nodelay
 int setnodelay(file, mode)
-FILE * file;
+PerlIO * file;
 int mode;
 {
-	int handle=fileno(file);
+	int handle=PerlIO_fileno(file);
 	int flags;
 	flags=fcntl(handle,F_GETFL,0);
 	if(mode)
@@ -1478,7 +1483,7 @@ int mode;
 
 #else
 int setnodelay(file, mode) 
-FILE * file;
+PerlIO * file;
 int mode;
 {
 	croak("setnodelay is not supported on this architecture");
@@ -1488,15 +1493,13 @@ int mode;
 
 #ifdef Have_poll
 int pollfile(file,delay)
-FILE * file;
+PerlIO * file;
 double delay;
 {
-	int handle=fileno(file);
+	int handle=PerlIO_fileno(file);
 	struct pollfd fds;
-#	ifdef COUNT
-	if( FCOUNT(file)>0 )
+	if (PerlIO_fast_gets(f) && PerlIO_get_cnt(f) > 0)
 		return 1;
-#	endif
 	if(delay<0.0) delay = 0.0;
 	fds.fd=handle;
 	fds.events=POLLIN;
@@ -1505,7 +1508,7 @@ double delay;
 } 
 #else
 int pollfile(file,delay) 
-FILE * file;
+PerlIO * file;
 double delay;
 {
 	croak("pollfile is not supported on this architecture");
@@ -1522,7 +1525,7 @@ double delay;
 */
 
 int Win32PeekChar(file,delay,key)
-FILE * file;
+PerlIO * file;
 double delay;
 char * key;
 {
@@ -1536,7 +1539,7 @@ char * key;
 
 	file = stdin;
 
-	handle =fileno(file);
+	handle =PerlIO_fileno(file);
 	whnd = /*GetStdHandle(STD_INPUT_HANDLE)*/(HANDLE)_get_osfhandle(handle);
 
 
@@ -1602,7 +1605,7 @@ again:
 } 
 #else
 int Win32PeekChar(file, delay, key) 
-FILE * file;
+PerlIO * file;
 double delay;
 char * key;
 {
@@ -1655,14 +1658,14 @@ MODULE = Term::ReadKey		PACKAGE = Term::ReadKey
 
 int
 selectfile(file,delay)
-	FILE *	file
+	InputStream	file
 	double	delay
 
 # Clever, eh?
 void
 SetReadMode(mode,file=STDIN)
 	int	mode
-	FILE *	file
+	InputStream	file
 	CODE:
 	{
 		ReadMode(file,mode);
@@ -1670,17 +1673,17 @@ SetReadMode(mode,file=STDIN)
 
 int
 setnodelay(file,mode)
-	FILE *	file
+	InputStream	file
 	int	mode
 
 int
 pollfile(file,delay)
-	FILE *	file
+	InputStream	file
 	double	delay
 
 SV *
 Win32PeekChar(file, delay)
-	FILE *	file
+	InputStream	file
 	double	delay
 	CODE:
 	{
@@ -1704,7 +1707,7 @@ termsizeoptions()
 
 void
 GetTermSizeWin32(file=STDIN)
-	FILE *	file
+	InputStream	file
 	PPCODE:
 	{
 		int x,y,xpix,ypix;
@@ -1724,7 +1727,7 @@ GetTermSizeWin32(file=STDIN)
 
 void
 GetTermSizeVIO(file=STDIN)
-	FILE *	file
+	InputStream	file
 	PPCODE:
 	{
 		int x,y,xpix,ypix;
@@ -1744,7 +1747,7 @@ GetTermSizeVIO(file=STDIN)
 
 void
 GetTermSizeGWINSZ(file=STDIN)
-	FILE *	file
+	InputStream	file
 	PPCODE:
 	{
 		int x,y,xpix,ypix;
@@ -1764,7 +1767,7 @@ GetTermSizeGWINSZ(file=STDIN)
 
 void
 GetTermSizeGSIZE(file=STDIN)
-	FILE *	file
+	InputStream	file
 	PPCODE:
 	{
 		int x,y,xpix,ypix;
@@ -1788,7 +1791,7 @@ SetTerminalSize(width,height,xpix,ypix,file=STDIN)
 	int	height
 	int	xpix
 	int	ypix
-	FILE *	file
+	InputStream	file
 	CODE:
 	{
 		RETVAL=SetTerminalSize(file,width,height,xpix,ypix);
@@ -1796,7 +1799,7 @@ SetTerminalSize(width,height,xpix,ypix,file=STDIN)
 
 void
 GetSpeed(file=STDIN)
-	FILE *	file
+	InputStream	file
 	PPCODE:
 	{
 		I32 in,out;
