@@ -1,5 +1,5 @@
 #
-#  $Id: ReadKey.pm,v 2.22 2005/01/11 21:15:17 jonathan Exp $
+#  $Id: ReadKey.pm,v 2.23 2005/01/11 21:16:31 jonathan Exp $
 #
 
 =head1 NAME
@@ -10,7 +10,7 @@ Term::ReadKey - A perl module for simple terminal control
 
 	use Term::ReadKey;
 	ReadMode 4; # Turn off controls keys
-	while (not defined ($key = ReadKey(-1)) {
+	while (not defined ($key = ReadKey(-1))) {
 		# No key yet
 	}
 	print "Get key $key\n";
