@@ -3,6 +3,9 @@
 #include "EXTERN.h"
 #include "perl.h"
 #include "XSUB.h"
+#ifndef PATCHLEVEL
+# include "patchlevel.h"
+#endif
 
 /*******************************************************************
 
@@ -13,6 +16,11 @@
  Written by Kenneth Albanowski on Thu Oct  6 11:42:20 EDT 1994
  Contact at kjahds@kjahds.com or CIS:70705,126
  
+ Version 2.11, Sun Dec 14 00:39:12 EST 1997
+    First attempt at Win32 support.
+
+ Version 2.10, skipped
+
  Version 2.09, Tue Oct  7 13:07:43 EDT 1997
     Grr. Added explicit detection of sys/poll.h and poll.h.
 
@@ -114,6 +122,7 @@
 ***/
 
 
+
 /* Using these defines, you can elide anything you know 
    won't work properly */
 
@@ -168,6 +177,24 @@
         /* no os2 */
 #endif
 
+/* This bit is for Windows 95/NT */
+
+#ifdef WIN32
+#		define DONT_USE_TERMIO
+#		define DONT_USE_TERMIOS
+#		define DONT_USE_SGTTY
+#		define DONT_USE_POLL
+#		define DONT_USE_SELECT
+#		define DONT_USE_NODELAY
+#		define USE_WIN32
+#		include <io.h>
+#		if defined(_get_osfhandle) && (PATCHLEVEL == 4) && (SUBVERSION < 5)
+#			undef _get_osfhandle
+#			if defined(_MSC_VER)
+#				define level _cnt
+#			endif
+#		endif
+#endif
 
 /* This bit for NeXT */
 
@@ -305,6 +332,10 @@ int GetTermSizeGSIZE _((FILE * file,
 	int * retwidth, int * retheight, 
 	int * xpix, int * ypix));
 
+int GetTermSizeWin32 _((FILE * file,
+	int * retwidth, int * retheight,
+	int * xpix, int * ypix));
+
 int SetTerminalSize _((FILE * file, 
 	int width, int height, 
 	int xpix, int ypix));
@@ -316,6 +347,8 @@ int pollfile _((FILE * file, double delay));
 int setnodelay _((FILE * file, int mode));
 
 int selectfile _((FILE * file, double delay));
+
+int Win32PeekChar _((FILE * file, double delay, char * key));
 
 int getspeed _((FILE * file, I32 *in, I32 * out ));
 
@@ -406,6 +439,41 @@ int *retwidth, *retheight, *xpix, *ypix;
 }
 #endif
 
+#ifdef USE_WIN32
+int GetTermSizeWin32(file,retwidth,retheight,xpix,ypix)
+FILE * file;
+int *retwidth, *retheight, *xpix, *ypix;
+{
+	int handle=fileno(file);
+	HANDLE whnd = (HANDLE)_get_osfhandle(handle);
+	CONSOLE_SCREEN_BUFFER_INFO info;
+
+	if (GetConsoleScreenBufferInfo(whnd, &info)) {
+		/* Logic: return maximum possible screen width, but return
+		   only currently selected height */
+		if (retwidth)
+			*retwidth = info.dwMaximumWindowSize.X; 
+			/*info.srWindow.Right - info.srWindow.Left;*/
+		if (retheight)
+			*retheight = info.srWindow.Bottom - info.srWindow.Top;
+		if (xpix)
+			*xpix = 0;
+		if (ypix)
+			*ypix = 0;
+		return 0;
+	} else
+		return -1;
+}
+#else
+int GetTermSizeWin32(file,retwidth,retheight,xpix,ypix)
+FILE * file;
+int *retwidth, *retheight, *xpix, *ypix;
+{
+	croak("TermSizeWin32 is not implemented on this architecture");
+}
+#endif /* USE_WIN32 */
+
+
 int termsizeoptions() {
 	return	0
 #ifdef VIOMODE
@@ -416,6 +484,9 @@ int termsizeoptions() {
 #endif
 #if defined(TIOCGSIZE) && !defined(DONT_USE_GSIZE)
 		| 4
+#endif
+#if defined(USE_WIN32)
+		| 8
 #endif
 		;
 }
@@ -617,6 +688,9 @@ I32 *in, *out;
 #       endif
 }
 
+#ifdef WIN32
+struct tbuffer { DWORD Mode; };
+#else
 #ifdef I_TERMIOS
 #define USE_TERMIOS
 #define tbuffer termios
@@ -647,6 +721,7 @@ struct tbuffer {
 #endif
 #endif
 #endif
+#endif
 
 HV * filehash; /* Used to store the original terminal settings for each handle*/
 HV * modehash; /* Used to record the current terminal "mode" for each handle*/
@@ -655,14 +730,23 @@ void ReadMode(file,mode)
 FILE * file;
 int mode;
 {
-	int handle=fileno(file);
+	int handle;
 	int firsttime;
 	int oldmode;
 	struct tbuffer work;
 	struct tbuffer	savebuf;
 
+	
+	handle=fileno(file);
+	
 	firsttime=!hv_exists(filehash, (char*)&handle, sizeof(int));
 
+
+#	ifdef WIN32
+
+	GetConsoleMode((HANDLE)_get_osfhandle(handle), &work.Mode);
+
+#	endif /* WIN32 */
 
 #       ifdef USE_TERMIOS
 	/* Posixy stuff */
@@ -714,6 +798,37 @@ int mode;
 			croak("Unable to retrieve stashed terminal mode.\n");
 		oldmode=SvIV(*temp);
 	}
+
+#ifdef WIN32
+
+	switch (mode) {
+		case 5:
+			/* Should 5 disable ENABLE_WRAP_AT_EOL_OUTPUT? */
+		case 4:
+			work.Mode &= ~(ENABLE_ECHO_INPUT|ENABLE_PROCESSED_INPUT|ENABLE_LINE_INPUT|ENABLE_PROCESSED_OUTPUT);
+			work.Mode |= 0;
+			break;
+		case 3:
+			work.Mode &= ~(ENABLE_LINE_INPUT|ENABLE_ECHO_INPUT);
+			work.Mode |= ENABLE_PROCESSED_INPUT|ENABLE_PROCESSED_OUTPUT;
+			break;
+		case 2:
+			work.Mode &= ~(ENABLE_ECHO_INPUT);
+			work.Mode |= ENABLE_LINE_INPUT|ENABLE_PROCESSED_INPUT|ENABLE_PROCESSED_OUTPUT;
+			break;
+		case 1:
+			work.Mode &= ~(0);
+			work.Mode |= ENABLE_ECHO_INPUT|ENABLE_LINE_INPUT|ENABLE_PROCESSED_INPUT|ENABLE_PROCESSED_OUTPUT;
+			break;
+		case 0:
+			work = savebuf;
+			firsttime = 1;
+			break;
+	}
+
+	SetConsoleMode((HANDLE)_get_osfhandle(handle), work.Mode);			
+	
+#endif /* WIN32 */
 
 
 #ifdef USE_TERMIOS
@@ -1389,6 +1504,105 @@ double delay;
 }
 #endif
 
+#ifdef WIN32
+
+/*
+
+ This portion of the Win32 code is partially borrowed from a version of PDCurses.
+
+*/
+
+int Win32PeekChar(file,delay,key)
+FILE * file;
+double delay;
+char * key;
+{
+	int handle;
+	HANDLE whnd;
+	INPUT_RECORD record;
+	DWORD readRecords;
+
+	static int keyCount = 0;
+	static char lastKey = 0;
+
+	file = stdin;
+
+	handle =fileno(file);
+	whnd = /*GetStdHandle(STD_INPUT_HANDLE)*/(HANDLE)_get_osfhandle(handle);
+
+
+again:
+	if (keyCount > 0) {
+		keyCount--;
+		*key = lastKey;
+	    return TRUE;
+	}
+
+	if (delay > 0) {
+		if (WaitForSingleObject(whnd, delay * 1000.0) != WAIT_OBJECT_0)
+		{
+			return FALSE;
+		}
+	}
+
+	if (delay != 0) {
+		PeekConsoleInput(whnd, &record, 1, &readRecords);
+		if (readRecords == 0)
+			return(FALSE);
+	}
+
+	ReadConsoleInput(whnd, &record, 1, &readRecords);
+	switch(record.EventType)
+   {
+    case KEY_EVENT:
+		/*printf("\nkeyDown = %d, repeat = %d, vKey = %d, vScan = %d, ASCII = %d, Control = %d\n",
+			record.Event.KeyEvent.bKeyDown,
+			record.Event.KeyEvent.wRepeatCount,
+			record.Event.KeyEvent.wVirtualKeyCode,
+			record.Event.KeyEvent.wVirtualScanCode,
+			record.Event.KeyEvent.uChar.AsciiChar,
+			record.Event.KeyEvent.dwControlKeyState);*/
+
+         if (record.Event.KeyEvent.bKeyDown == FALSE)
+            goto again;                        /* throw away KeyUp events */
+         if (record.Event.KeyEvent.wVirtualKeyCode == 16
+         ||  record.Event.KeyEvent.wVirtualKeyCode == 17
+         ||  record.Event.KeyEvent.wVirtualKeyCode == 18
+         ||  record.Event.KeyEvent.wVirtualKeyCode == 20
+         ||  record.Event.KeyEvent.wVirtualKeyCode == 144
+         ||  record.Event.KeyEvent.wVirtualKeyCode == 145)
+            goto again;  /* throw away shift/alt/ctrl key only key events */
+         keyCount = record.Event.KeyEvent.wRepeatCount;
+		 break;
+    default:
+         keyCount = 0;
+         goto again;
+         break;
+   }
+
+ *key = lastKey = record.Event.KeyEvent.uChar.AsciiChar; 
+ keyCount--;
+ 
+ return(TRUE);
+
+ /* again:
+	return (FALSE);
+	*/
+
+
+} 
+#else
+int Win32PeekChar(file, delay, key) 
+FILE * file;
+double delay;
+char * key;
+{
+	croak("Win32PeekChar is not supported on this architecture");
+	return 0;
+}
+#endif
+
+
 int blockoptions() {
 	return	0
 #ifdef Have_nodelay
@@ -1399,6 +1613,9 @@ int blockoptions() {
 #endif
 #ifdef Have_select
 		| 4
+#endif
+#ifdef USE_WIN32
+		| 8
 #endif
 		;
 }
@@ -1416,6 +1633,9 @@ int termoptions() {
 #endif
 #ifdef USE_STTY
 	i=4;
+#endif
+#ifdef USE_WIN32
+	i=5;
 #endif
 	return i;
 }
@@ -1447,7 +1667,22 @@ setnodelay(file,mode)
 int
 pollfile(file,delay)
 	FILE *	file
-	double	delay 
+	double	delay
+
+SV *
+Win32PeekChar(file, delay)
+	FILE *	file
+	double	delay
+	CODE:
+	{
+		char key;
+		if (Win32PeekChar(file, delay, &key))
+			RETVAL = newSVpv(&key, 1);
+		else
+			RETVAL = newSVsv(&sv_undef);
+	}
+	OUTPUT:
+	RETVAL
 
 int
 blockoptions()
@@ -1457,6 +1692,26 @@ termoptions()
 
 int
 termsizeoptions()
+
+void
+GetTermSizeWin32(file=STDIN)
+	FILE *	file
+	PPCODE:
+	{
+		int x,y,xpix,ypix;
+		if( GetTermSizeWin32(file,&x,&y,&xpix,&ypix)==0)
+		{
+			EXTEND(sp, 4);
+			PUSHs(sv_2mortal(newSViv((IV)x)));
+			PUSHs(sv_2mortal(newSViv((IV)y)));
+			PUSHs(sv_2mortal(newSViv((IV)xpix)));
+			PUSHs(sv_2mortal(newSViv((IV)ypix)));
+		}
+		else
+		{
+			ST(0) = sv_newmortal();
+		}
+	}
 
 void
 GetTermSizeVIO(file=STDIN)

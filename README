@@ -1,26 +1,25 @@
- Term::ReadKey 2.08 - Change terminal modes, and perform non-blocking reads.
+ Term::ReadKey 2.11 - Change terminal modes, and perform non-blocking reads.
 
- Copyright (C) 1994, 1995, Kenneth Albanowski. Unlimited distribution and/or
+ Copyright (C) 1994-1997 Kenneth Albanowski. Unlimited distribution and/or
  modification is allowed as long as this copyright notice remains intact.
 
-This module, ReadKey, provides ioctl control for terminals so the input
-modes can be changed (thus allowing reads of a single character at a time),
-and also provides non-blocking reads of stdin, as well as several other
-terminal related features, including retrieval/modification of the screen
-size, and retrieval/modification of the control characters. Installation
-requires MakeMaker 3.5 or higher (MakeMaker 3.7 is included with perl 5.001,
-so now is a good time to upgrade if you haven't already.)
+This module, ReadKey, provides ioctl control for terminals and Win32
+consoles so the input modes can be changed (thus allowing reads of a single
+character at a time), and also provides non-blocking reads of stdin, as well
+as several other terminal related features, including retrieval/modification
+of the screen size, and retrieval/modification of the control characters.
+Installation requires MakeMaker 3.5 or higher (MakeMaker 3.7 is included
+with perl 5.001, so now is a good time to upgrade if you haven't already.)
 
-To install, if you are using static linking, or wish to keep your modules in
-the perl build tree, extract this tar in the ext/ subdirectory of the perl
-source directory. Then just run a normal "make" in the perl source
-directory.
+To install, unpack somewhere, type "perl Makefile.PL", and then "make test".
+If the compilation and the tests are successful, then change to root and run
+"make install".
 
-If, however, you are using dynamic linking, you may unpack this in any
-directory you want, under perl or not, type "perl Makefile.PL", and then
-"make test". If the compilation and the tests are successful, then change to
-root and run "make install".
-
+New in version 2.10 is support for Win32. This has only been tested with one
+particular binary distribution and compiler, so it may need a bit of
+exercise. There is are also some limitations, with the ReadLine call being
+unavailable, and ReadKey possibly generating bad results if you are reading
+from multiple consoles, and key repeat is used.
 
 VERY IMPORTANT: In 2.00, the ReadKey/ReadLine arguments changed. Now, if
 you want a call that is non-blocking and returns immediately if no

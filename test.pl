@@ -15,11 +15,15 @@
 #BEGIN {@INC = ("/home/kjahds/perl5/perl5.000/lib/auto","/home/kjahds/perl5/perl5.000/lib"); }
 
 use Term::ReadKey;
-open(IN,"</dev/tty");
+if ($^O =~ /Win32/i) {
+	open(IN,'<CONIN$') or die "Unable to open console input";
+	open(OUT,'<CONOUT$') or die "Unable to open console output";
+} else {
+	open(IN,"</dev/tty");
+	*OUT = *IN;
+}
+
 *IN=*IN; # Make single-use warning go away
-#select(IN);
-#$|=1;
-#select(STDIN);
 $|=1;
 
 print "\nAnd now on to the tests!\n\n";
@@ -67,6 +71,8 @@ if( &Term::ReadKey::termoptions() == 1) {
 	print "Term::ReadKey is using SGTTY, as opposed to TERMIOS or TERMIO.\n";
 } elsif( &Term::ReadKey::termoptions() == 4) {
 	print "Term::ReadKey is trying to make do with stty; facilites may be limited.\n";
+} elsif( &Term::ReadKey::termoptions() == 5) {
+	print "Term::ReadKey is using Win32 functions.\n";
 } else {
 	print "Term::ReadKey could not find any way to manipulate the terminal.\n";
 }
@@ -76,6 +82,7 @@ print "\n";
 push(@modes,"O_NODELAY") if &Term::ReadKey::blockoptions() & 1;
 push(@modes,"poll()") if &Term::ReadKey::blockoptions() & 2;
 push(@modes,"select()") if &Term::ReadKey::blockoptions() & 4;
+push(@modes,"Win32") if &Term::ReadKey::blockoptions() & 8;
 
 if(&Term::ReadKey::blockoptions()==0)
 {
@@ -90,7 +97,7 @@ else
 	print "\n";
 }
 
-@size = GetTerminalSize(IN); # Or *IN
+@size = GetTerminalSize(OUT);
 
 if(!@size) {
 	print "GetTerminalSize was incapable of finding the size of your terminal.";
@@ -193,14 +200,14 @@ while($k ne "q")
  print "\nYou pressed `",makenice($k),"'\n";
 }
 
-print "\nLastly, ReadMode 5, which also affects output.\n\n";
+print "\nLastly, ReadMode 5, which also affects output (except under Win32).\n\n";
 
 ReadMode 5, IN;
 
-print "This should be a diagonal line: *\n*\n*\n\*\n*\n*\r\n\r\n";
+print "This should be a diagonal line (except under Win32): *\n*\n*\n\*\n*\n*\r\n\r\n";
 print "And this should be a moving spot:\r\n\r\n";
 
-$width = (GetTerminalSize(IN))[0];
+$width = (GetTerminalSize(OUT))[0];
 $width/=2;
 $width--;
 if($width<10) { $width=10;}

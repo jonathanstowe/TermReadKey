@@ -51,7 +51,8 @@ handle is supplied. Modes 0 and 5 have some special properties worth
 mentioning: not only will mode 0 restore original settings, but it cause the
 next ReadMode call to save a new set of default settings. Mode 5 is similar
 to mode 4, except no CR/LF translation is performed, and if possible, parity
-will be disabled (only if not being used by the terminal, however.)
+will be disabled (only if not being used by the terminal, however. It is no different
+from mode 4 under Windows.)
 
 If you are executing another program that may be changing the terminal mode,
 you will either want to say
@@ -92,6 +93,10 @@ behaviour.) If MODE is less then zero, then this is treated as a timeout
 of zero, and thus will return immediately if no character is waiting. A MODE
 of zero, however, will act like a normal getc.
 
+There are currently some limitations with this call under Windows. It may be
+possible that non-blocking reads will fail when reading repeating keys from
+more then one console.
+
 =item ReadLine MODE [, Filehandle]
 
 Takes an integer argument, which can currently be one of the following 
@@ -111,12 +116,17 @@ ReadMode's higher then 1. For example, pressing Space and then Backspace
 would appear to leave you where you started, but any timeouts would now
 be suspended.
 
+This call is currently not available under Windows.
+
 =item GetTerminalSize [Filehandle]
 
-Returns either an empty array if this operation is
-unsupported, or a four element array containing: the width of the terminal in
-characters, the height of the terminal in character, the width in pixels,
-and the height in pixels.
+Returns either an empty array if this operation is unsupported, or a four
+element array containing: the width of the terminal in characters, the
+height of the terminal in character, the width in pixels, and the height in
+pixels. (The pixel size will only be valid in some environments.)
+
+Under Windows, this function must be called with an "output" filehandle,
+such as STDOUT, or a handle opened to CONOUT$.
 
 =item SetTerminalSize WIDTH,HEIGHT,XPIX,YPIX [, Filehandle]
 
@@ -126,19 +136,21 @@ change the size of the screen. For example, XTerm uses a call like this when
 it resizes the screen. If any of the new measurements vary from the old, the
 OS will probably send a SIGWINCH signal to anything reading that tty or pty.
 
+This call does not work under Windows.
+
 =item GetSpeeds [, Filehandle]
 
 Returns either an empty array if the operation is unsupported, or a two
 value array containing the terminal in and out speeds, in B<decimal>. E.g,
 an in speed of 9600 baud and an out speed of 4800 baud would be returned as
 (9600,4800). Note that currently the in and out speeds will always be
-identical in some OS's.
+identical in some OS's. No speeds are reported under Windows.
 
 =item GetControlChars [, Filehandle]
 
 Returns an array containing key/value pairs suitable for a hash. The pairs
 consist of a key, the name of the control character/signal, and the value
-of that character, as a single character.
+of that character, as a single character. This call does nothing under Windows.
 
 Each key will be an entry from the following list:
 
@@ -180,13 +192,19 @@ settings. The list of valid names is easily available via
 	%cchars = GetControlChars();
 	@cnames = keys %cchars;
 
+This call does nothing under Windows.
+
 =back
+
+=head1 AUTHOR
+
+Kenneth Albanowski <kjahds@kjahds.com>
 
 =cut
 
 package Term::ReadKey;
 
-$VERSION = "2.09";
+$VERSION = "2.11";
 
 require Exporter;
 require AutoLoader;
@@ -244,7 +262,7 @@ sub normalizehandle {
 
 
 sub GetTerminalSize {
-	my($file) = normalizehandle((@_>1?$_[1]:\*STDIN));
+	my($file) = normalizehandle((@_>1?$_[1]:\*STDOUT));
 	my(@results) = ();
 	my(@fail);
 	
@@ -260,6 +278,10 @@ sub GetTerminalSize {
 	{
 		@results = GetTermSizeGSIZE($file);
 		push(@fail,"TIOCGSIZE ioctl");
+	} elsif(&termsizeoptions() & 8) # WIN32
+	{
+		@results = GetTermSizeWin32($file);
+		push(@fail,"Win32 GetConsoleScreenBufferInfo call");
 	} else
 	{
 		@results = ();
@@ -429,6 +451,29 @@ elsif(&blockoptions() & 4) # Use select
 	sub ReadLine {
 	  my($File) = normalizehandle((@_>1?$_[1]:\*STDIN));
 		if($_[0]!=0) {return undef if &selectfile($File,$_[0])==0}
+		scalar(<$File>);
+	}
+DONE
+}
+elsif(&blockoptions() & 8) # Use Win32
+{
+	eval <<'DONE';
+	sub ReadKey {
+	  my($File) = normalizehandle((@_>1?$_[1]:\*STDIN));
+		if ($_[0]) {
+			Win32PeekChar($File, $_[0]);
+		} else {
+			getc $File;
+		}
+		#if ($_[0]!=0) {return undef if !Win32PeekChar($File, $_[0])};
+		#getc $File;
+	}
+	sub ReadLine {
+	  my($File) = normalizehandle((@_>1?$_[1]:\*STDIN));
+		#if ($_[0]!=0) {return undef if !Win32PeekChar($File, $_[0])};
+		#scalar(<$File>);
+		if($_[0]) 
+			{croak("Non-blocking ReadLine is not supported on this architecture")}
 		scalar(<$File>);
 	}
 DONE

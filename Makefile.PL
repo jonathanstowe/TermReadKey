@@ -1,4 +1,4 @@
-# Term::ReadKey Makefile.PL Version 2.07
+# Term::ReadKey Makefile.PL Version 2.11
 
 use ExtUtils::MakeMaker;
 use Carp;
