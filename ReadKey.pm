@@ -1,5 +1,5 @@
 #
-#  $Id: ReadKey.pm,v 1.6 2002/05/21 07:15:11 gellyfish Exp $
+#  $Id: ReadKey.pm,v 1.7 2002/07/28 12:01:18 gellyfish Exp $
 # 
 
 =head1 NAME
@@ -211,7 +211,7 @@ Currently maintained by Jonathan Stowe <jns@gellyfish.com>
 package Term::ReadKey;
 
 
-$VERSION = '2.20';
+$VERSION = '2.21';
 
 require Exporter;
 require AutoLoader;
@@ -322,9 +322,9 @@ sub GetTerminalSize {
 		# Workaround for Solaris path sillyness
 		if(-f "/usr/openwin/bin/resize") { $prog = "/usr/openwin/bin/resize"}
 		
-		my($resize) = scalar(`$prog`);
-		if($resize =~ /COLUMNS\s*=\s*(\d+)/ or 
-		   $resize =~ /setenv\s+COLUMNS\s+'?(\d+)/)  {
+		my($resize) = scalar(`$prog 2>/dev/null`);
+		if(defined $resize and ($resize =~ /COLUMNS\s*=\s*(\d+)/ or 
+		   $resize =~ /setenv\s+COLUMNS\s+'?(\d+)/))  {
 			$results[0] = $1;
 			if( $resize =~ /LINES\s*=\s*(\d+)/ or
 			    $resize =~ /setenv\s+LINES\s+'?(\d+)/) {

@@ -18,7 +18,10 @@
 
  Maintained by Jonathan Stowe <jns@gellyfish.com>
 
- $Id: ReadKey.xs,v 1.7 2002/05/21 07:15:11 gellyfish Exp $
+ $Id: ReadKey.xs,v 1.8 2002/07/28 12:01:18 gellyfish Exp $
+
+ Version 2.21, Sun Jul 28 12:57:56 BST 2002
+    Fix to improve the chances of automated testing succeeding
 
  Version 2.20, Tue May 21 07:52:47 BST 2002
     Patch from Autrijus Tang fixing Win32 Breakage with bleadperl

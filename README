@@ -1,4 +1,4 @@
- Term::ReadKey 2.17 - Change terminal modes, and perform non-blocking reads.
+ Term::ReadKey 2.21 - Change terminal modes, and perform non-blocking reads.
 
  Copyright (C) 1994-1999 Kenneth Albanowski. 
                2001,2002 Jonathan Stowe

@@ -26,12 +26,24 @@ print "ok 1\n";
 
 use Fcntl;
 
+if ( not exists $ENV{COLUMNS} )
+{
+  $ENV{COLUMNS} = 80;
+  $ENV{LINES} = 24;
+}
+
 if ($^O =~ /Win32/i) {
 	sysopen(IN,'CONIN$',O_RDWR) or die "Unable to open console input:$!";
 	sysopen(OUT,'CONOUT$',O_RDWR) or die "Unable to open console output:$!";
 } else {
-	open(IN,"</dev/tty");
-	*OUT = *IN;
+        
+	if ( open(IN,"</dev/tty") ) {
+	   *OUT = *IN;
+           die "Foo" unless -t OUT;
+        }
+        else {
+           die "Can't open /dev/tty - $!\n";
+        }
 }
 
 *IN=*IN; # Make single-use warning go away

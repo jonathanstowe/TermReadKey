@@ -59,6 +59,7 @@
 
 
 /*
+
 #!/usr/bin/perl
 @ARGV = ("*.xs") if !@ARGV;
 %badmacros = %funcs = %macros = (); $replace = 0;
