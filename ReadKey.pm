@@ -204,23 +204,31 @@ Kenneth Albanowski <kjahds@kjahds.com>
 
 package Term::ReadKey;
 
-$VERSION = "2.15";
+$VERSION = '2.16';
 
 require Exporter;
 require AutoLoader;
 require DynaLoader;
 use Carp;
 
-@ISA = (Exporter, AutoLoader, DynaLoader);
+@ISA = qw(Exporter AutoLoader DynaLoader);
+
 # Items to export into callers namespace by default
 # (move infrequently used names to @EXPORT_OK below)
+
 @EXPORT =  qw(
-	ReadKey ReadMode ReadLine GetTerminalSize SetTerminalSize
-	GetSpeed GetControlChars SetControlChars
-     );
-# Other items we are prepared to export if requested
-@EXPORT_OK = qw( 
-);
+	      ReadKey 
+              ReadMode 
+              ReadLine 
+              GetTerminalSize 
+              SetTerminalSize
+	      GetSpeed 
+              GetControlChars 
+              SetControlChars
+             );
+
+
+@EXPORT_OK = qw();
 
 bootstrap Term::ReadKey;
 
@@ -236,8 +244,13 @@ bootstrap Term::ReadKey;
 $UseEnv = 1;
 
 
-%modes=(original => 0, restore => 0, normal => 1, noecho => 2, 
-	cbreak => 3, raw => 4, "ultra-raw" => 5);
+%modes=( original    => 0, 
+         restore     => 0, 
+         normal      => 1, 
+         noecho      => 2, 
+	 cbreak      => 3, 
+         raw         => 4, 
+         'ultra-raw' => 5);
 
 sub ReadMode {
 	my($mode) = $modes{$_[0]};

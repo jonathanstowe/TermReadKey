@@ -16,6 +16,10 @@
  Written by Kenneth Albanowski on Thu Oct  6 11:42:20 EDT 1994
  Contact at kjahds@kjahds.com or CIS:70705,126
 
+ Version 2.16, Thu Nov 29 21:19:03 GMT 2001
+    It appears that the genchars.pl bit of the patch didnt apply
+    Applied the new ppport.h from Devel::PPPort
+
  Version 2.15, Sun Nov  4 15:02:37 GMT 2001 (jns)
     Applied the patch in 
     http://www.xray.mpe.mpg.de/mailing-lists/perl5-porters/2001-01/msg01588.html
