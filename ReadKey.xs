@@ -13,6 +13,11 @@
  Written by Kenneth Albanowski on Thu Oct  6 11:42:20 EDT 1994
  Contact at kjahds@kjahds.com or CIS:70705,126
 
+ Version 2.04, Tue Oct 10 05:35:48 EDT 1995
+ 	Whoops. Changed GetTermSize back so that GSIZE code won't be
+ 	compiled if GWINSZ is being used. Also took ts_xxx and ts_yyy
+ 	out of GSIZE.
+
  Version 2.03, Thu Sep 21 21:53:16 EDT 1995
 	Fixed up debugging info in Readkey.pm, and changed TermSizeVIO
 	to use _scrsize(). Hopefully this is GO for both Solaris and OS/2.
@@ -87,11 +92,11 @@
 
 	Tell Configure about poll. 
 
-   Allow a perl caller to provide FILE argument for the rest of the 
-	routines.
-
-   Make sure the GetSpeed function is doing it's best to separate ispeed
-   from ospeed.
+	Make sure the GetSpeed function is doing it's best to separate ispeed
+	from ospeed.
+	
+	Separate the stty stuff from ReadMode, so that stty -a can be easily
+	used, among other things.
 
 ***/
 
@@ -367,8 +372,7 @@ int *retwidth, *retheight, *xpix, *ypix;
 }
 #endif
 
-
-#if defined(TIOCGSIZE) && !defined(DONT_USE_GSIZE)
+#if (!defined(TIOCGWINSZ) || defined(DONT_USE_GWINSZ)) && (defined(TIOCGSIZE) && !defined(DONT_USE_GSIZE))
 int GetTermSizeGSIZE(file,retwidth,retheight,xpix,ypix)
 FILE * file;
 int *retwidth, *retheight, *xpix, *ypix;
@@ -379,7 +383,7 @@ int *retwidth, *retheight, *xpix, *ypix;
 
 	if (ioctl (handle, TIOCGSIZE, &w) == 0) {
 		*retwidth=w.ts_cols; *retheight=w.ts_lines; 
-		*xpix=w.ts_xxx; *ypix=w.ts_yyy; return 0;
+		*xpix=0/*w.ts_xxx*/; *ypix=0/*w.ts_yyy*/; return 0;
 	}
 	else {
 		return -1; /* failure */
@@ -783,6 +787,9 @@ int mode;
 #ifndef XCASE
 #define XCASE 0
 #endif
+#ifndef BRKINT
+#define BRKINT 0
+#endif
 
 
 	if(mode==5) {
@@ -797,11 +804,11 @@ int mode;
 
 		memcpy((void*)&work,(void*)&savebuf,sizeof(struct tbuffer));
 
-		work.c_lflag &= ~(ICANON | ISIG | IEXTEN );
+		work.c_lflag &= ~(ICANON|ISIG|IEXTEN );
 		work.c_lflag &= ~(ECHO|ECHOE|ECHOK|ECHONL|ECHOCTL);
 		work.c_lflag &= ~(ECHOPRT|ECHOKE|FLUSHO|PENDIN|XCASE);
 		work.c_lflag |= NOFLSH;
-               	work.c_iflag &= ~(IXOFF|IXON | IXANY | ICRNL |IMAXBEL);
+        work.c_iflag &= ~(IXOFF|IXON|IXANY|ICRNL|IMAXBEL|BRKINT);
 
 		if(((work.c_iflag & INPCK) != INPCK) ||
                    ((work.c_cflag & PARENB) != PARENB)) {
@@ -825,7 +832,7 @@ int mode;
 		/*work.c_iflag = savebuf.c_iflag;*/
 		work.c_lflag &= ~(ICANON | ISIG | IEXTEN | ECHO);
 		work.c_lflag &= ~(ECHOE | ECHOK | ECHONL|ECHOCTL|ECHOPRT|ECHOKE);
-               	work.c_iflag &= ~(IXON | IXANY);
+        work.c_iflag &= ~(IXON | IXANY | BRKINT);
 		work.c_oflag = savebuf.c_oflag;
 		work.c_cc[VTIME] = 0;
 		work.c_cc[VMIN] = 1;
@@ -940,6 +947,9 @@ int mode;
 #ifndef XCASE
 #define XCASE 0
 #endif
+#ifndef BRKINT
+#define BRKINT 0
+#endif
 
 
 
@@ -952,7 +962,7 @@ int mode;
 
 		work.c_lflag &= ~(ECHO | ISIG | ICANON | XCASE);
 		work.c_lflag &= ~(ECHOE | ECHOK | ECHONL);
-		work.c_iflag &= ~(IXON | IXOFF | IXANY | ICRNL);
+		work.c_iflag &= ~(IXON | IXOFF | IXANY | ICRNL | BRKINT);
 		if((work.c_cflag | PARENB)!=PARENB ) {
 			work.c_iflag &= ~(ISTRIP|INPCK);
 			work.c_iflag |= IGNPAR;
@@ -971,7 +981,7 @@ int mode;
 		work.c_lflag &= ~(ECHO | ISIG | ICANON);
 		work.c_lflag &= ~(ECHOE | ECHOK | ECHONL);
 		work.c_iflag = savebuf.c_iflag;
-		work.c_iflag &= ~(IXON | IXOFF | IXANY);
+		work.c_iflag &= ~(IXON | IXOFF | IXANY | BRKINT);
 		work.c_oflag = savebuf.c_oflag;
 		work.c_cc[VMIN] = 1;
 		work.c_cc[VTIME] = 1;
@@ -1203,17 +1213,17 @@ int mode;
 	      but it would be nice if you could get a better OS */
 
 	   if(mode==5)
-		system("/bin/stty  raw -cbreak -isig -echo -ixon -onlcr -icrnl");
+		system("/bin/stty  raw -cbreak -isig -echo -ixon -onlcr -icrnl -brkint");
 	   else if(mode==4)
-		system("/bin/stty -raw  cbreak -isig -echo -ixon  onlcr  icrnl");
+		system("/bin/stty -raw  cbreak -isig -echo -ixon  onlcr  icrnl -brkint");
 	   else if(mode==3)
-		system("/bin/stty -raw  cbreak  isig -echo  ixon  onlcr  icrnl");
+		system("/bin/stty -raw  cbreak  isig -echo  ixon  onlcr  icrnl  brkint");
 	   else if(mode==2) 
-		system("/bin/stty -raw -cbreak  isig  echo  ixon  onlcr  icrnl");
+		system("/bin/stty -raw -cbreak  isig  echo  ixon  onlcr  icrnl  brkint");
 	   else if(mode==1)
-		system("/bin/stty -raw -cbreak  isig -echo  ixon  onlcr  icrnl");
+		system("/bin/stty -raw -cbreak  isig -echo  ixon  onlcr  icrnl  brkint");
 	   else if(mode==0)
-		system("/bin/stty -raw -cbreak  isig  echo  ixon  onlcr  icrnl");
+		system("/bin/stty -raw -cbreak  isig  echo  ixon  onlcr  icrnl  brkint");
 
 	   /* Those probably won't work, but they couldn't hurt 
               at this point */
