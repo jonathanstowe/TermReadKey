@@ -34,6 +34,7 @@ print "\nAnd now on to the tests!\n\n";
 sub makenicelist {
 	my(@list) = @_;
 	my($i,$result);
+	$result="";
 	for($i=0;$i<@list;$i++) {
 		$result .= ", " if $i>0;
 		$result .= "and " if $i==@list-1 and @list>1;
@@ -84,7 +85,7 @@ if(&Term::ReadKey::blockoptions()==0)
 else
 {
 	print "Non-blocking reads possible via ",makenicelist(@modes),".\n";
-	print $modes[0]." will be used. " if @modes>1;
+	print $modes[0]." will be used. " if @modes>0;
 	print $modes[1]." will be used for timed reads." if @modes>1 and $modes[0] eq "O_NODELAY";
 	print "\n";
 }

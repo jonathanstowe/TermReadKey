@@ -269,10 +269,11 @@ sub GetTerminalSize {
 		if(-f "/usr/openwin/bin/resize") { $prog = "/usr/openwin/bin/resize"}
 		
 		my($resize) = scalar(`$prog`);
-		#print "ro = |$resize|\n";
-		if($resize =~ /COLUMNS=(\d+)/) {
+		if($resize =~ /COLUMNS\s*=\s*(\d+)/ or 
+		   $resize =~ /setenv\s+COLUMNS\s+'?(\d+)/)  {
 			$results[0] = $1;
-			if( $resize =~ /LINES=(\d+)/) {
+			if( $resize =~ /LINES\s*=\s*(\d+)/ or
+			    $resize =~ /setenv\s+LINES\s+'?(\d+)/) {
 				$results[1] = $1;
 				@results[2,3] = (0,0);
 			} else {
@@ -399,7 +400,6 @@ elsif(&blockoptions() & 2) # Use poll
 		getc $File;
 	}
 	sub ReadLine {
-	  my $File;
 	  my($File) = normalizehandle((@_>1?$_[1]:\*STDIN));
 		if($_[0]!=0) {return undef if &pollfile($File,$_[0])==0}
 		scalar(<$File>);

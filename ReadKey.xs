@@ -6,12 +6,15 @@
 
 /*******************************************************************
 
- Copyright (C) 1994,1995 , Kenneth Albanowski. Unlimited distribution 
+ Copyright (C) 1994,1995,1996, Kenneth Albanowski. Unlimited distribution 
  and/or modification is allowed as long as this copyright notice remains 
  intact.
 
  Written by Kenneth Albanowski on Thu Oct  6 11:42:20 EDT 1994
  Contact at kjahds@kjahds.com or CIS:70705,126
+ 
+ Version 2.06, Tue Nov 26 01:47:09 EST 1996
+    Added PERLIO support and removed duplicate declaration in .pm.
 
  Version 2.05, Tue Mar 12 19:08:33 EST 1996
  	Changed poll support so it works. Cleaned up .pm a little.
@@ -1234,24 +1237,30 @@ int mode;
 
 }
 
-/* Make use of a recent addition to Configure, if possible */
-#ifdef USE_STDIO_PTR
-# define FCOUNT(f) FILE_cnt(f)
+#ifdef USE_PERLIO
+
+/* Make use of a recent addition to Perl, if possible */
+# define FCOUNT(f) PerlIO_get_cnt(f)
 #else
 
-/* This bit borrowed from pp_sys.c. Complain to Larry if it's broken. */
-
-# if defined(USE_STD_STDIO) || defined(atarist) /* this will work with atariST */
-#  define FBASE(f) ((f)->_base)
-#  define FSIZE(f) ((f)->_cnt + ((f)->_ptr - (f)->_base))
-#  define FPTR(f) ((f)->_ptr)
-#  define FCOUNT(f) ((f)->_cnt)
+ /* Make use of a recent addition to Configure, if possible */
+# ifdef USE_STDIO_PTR
+#  define FCOUNT(f) FILE_cnt(f)
 # else
-#  if defined(USE_LINUX_STDIO)
-#    define FBASE(f) ((f)->_IO_read_base)
-#    define FSIZE(f) ((f)->_IO_read_end - FBASE(f))
-#    define FPTR(f) ((f)->_IO_read_ptr)
-#    define FCOUNT(f) ((f)->_IO_read_end - FPTR(f))
+
+  /* This bit borrowed from pp_sys.c. Complain to Larry if it's broken. */
+#  if defined(USE_STD_STDIO) || defined(atarist) /* this will work with atariST */
+#   define FBASE(f) ((f)->_base)
+#   define FSIZE(f) ((f)->_cnt + ((f)->_ptr - (f)->_base))
+#   define FPTR(f) ((f)->_ptr)
+#   define FCOUNT(f) ((f)->_cnt)
+#  else
+#   if defined(USE_LINUX_STDIO)
+#     define FBASE(f) ((f)->_IO_read_base)
+#     define FSIZE(f) ((f)->_IO_read_end - FBASE(f))
+#     define FPTR(f) ((f)->_IO_read_ptr)
+#     define FCOUNT(f) ((f)->_IO_read_end - FPTR(f))
+#   endif
 #  endif
 # endif
 #endif

@@ -11,7 +11,7 @@ if( $ExtUtils::MakeMaker::Version < 3.5 ) {
 &WriteMakefile(
 	NAME => "Term::ReadKey",
 	DISTNAME => "TermReadKey",
-	VERSION => "2.05",
+	VERSION => "2.06",
 	PM => { "ReadKey.pm" => '$(INST_LIBDIR)/ReadKey.pm'},
 
 # Uncomment these to allow testing of sgtty under Linux. Not needed normally.
