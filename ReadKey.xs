@@ -13,6 +13,9 @@
  Written by Kenneth Albanowski on Thu Oct  6 11:42:20 EDT 1994
  Contact at kjahds@kjahds.com or CIS:70705,126
  
+ Version 2.09, Tue Oct  7 13:07:43 EDT 1997
+    Grr. Added explicit detection of sys/poll.h and poll.h.
+
  Version 2.08, Mon Oct  6 16:07:44 EDT 1997
     Changed poll.h to sys/poll.h.
 
@@ -216,8 +219,14 @@
 
 #if !defined(DONT_USE_POLL)
 # ifdef HAS_POLL
-#  include <sys/poll.h>
-#  define Have_poll
+#  ifdef HAVE_POLL_H
+#   include <poll.h>
+#   define Have_poll
+#  endif
+#  ifdef HAVE_SYS_POLL_H
+#   include <sys/poll.h>
+#   define Have_poll
+#  endif
 # endif
 #endif
 

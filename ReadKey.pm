@@ -2,6 +2,16 @@
 
 Term::ReadKey - A perl module for simple terminal control
 
+=head1 SYNOPSIS
+
+	use Term::ReadKey;
+	ReadMode 4; # Turn off controls keys
+	while (not defined ($key = ReadKey(-1)) {
+		# No key yet
+	}
+	print "Get key $key\n";
+	ReadMode 0; # Reset tty mode before exiting
+
 =head1 DESCRIPTION
 
 Term::ReadKey is a compiled perl module dedicated to providing simple
@@ -176,7 +186,7 @@ settings. The list of valid names is easily available via
 
 package Term::ReadKey;
 
-$VERSION = "2.08";
+$VERSION = "2.09";
 
 require Exporter;
 require AutoLoader;

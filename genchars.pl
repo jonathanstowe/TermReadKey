@@ -90,6 +90,9 @@ print CCHARS "
 
 ";
 
+print CCHARS "#define HAVE_POLL_H\n" if CheckHeader("poll.h");
+print CCHARS "#define HAVE_SYS_POLL_H\n" if CheckHeader("sys/poll.h");
+
 print "\n";
 if(1) {
 	@values = sort { $possible{$a} cmp $possible{$b} } keys %possible;
