@@ -9,12 +9,15 @@
 
 /*******************************************************************
 
- Copyright (C) 1994,1995,1996, Kenneth Albanowski. Unlimited distribution 
- and/or modification is allowed as long as this copyright notice remains 
- intact.
+ Copyright (C) 1994,1995,1996,1997 Kenneth Albanowski. Unlimited
+ distribution and/or modification is allowed as long as this copyright
+ notice remains intact.
 
  Written by Kenneth Albanowski on Thu Oct  6 11:42:20 EDT 1994
  Contact at kjahds@kjahds.com or CIS:70705,126
+
+ Version 2.12, Wed Jan  7 10:33:11 EST 1998
+ 	Slightly modified test and error reporting for Win32.
  
  Version 2.11, Sun Dec 14 00:39:12 EST 1997
     First attempt at Win32 support.
@@ -744,7 +747,8 @@ int mode;
 
 #	ifdef WIN32
 
-	GetConsoleMode((HANDLE)_get_osfhandle(handle), &work.Mode);
+	if (!GetConsoleMode((HANDLE)_get_osfhandle(handle), &work.Mode))
+	    croak("GetConsoleMode failed, LastError=|%d|",GetLastError());
 
 #	endif /* WIN32 */
 
@@ -826,8 +830,9 @@ int mode;
 			break;
 	}
 
-	SetConsoleMode((HANDLE)_get_osfhandle(handle), work.Mode);			
-	
+	if (!SetConsoleMode((HANDLE)_get_osfhandle(handle), work.Mode))
+	    croak("SetConsoleMode failed, LastError=|%d|",GetLastError());
+
 #endif /* WIN32 */
 
 

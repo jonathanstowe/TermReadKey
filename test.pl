@@ -15,9 +15,11 @@
 #BEGIN {@INC = ("/home/kjahds/perl5/perl5.000/lib/auto","/home/kjahds/perl5/perl5.000/lib"); }
 
 use Term::ReadKey;
+use Fcntl;
+
 if ($^O =~ /Win32/i) {
-	open(IN,'<CONIN$') or die "Unable to open console input";
-	open(OUT,'<CONOUT$') or die "Unable to open console output";
+	sysopen(IN,'CONIN$',O_RDWR) or die "Unable to open console input:$!";
+	sysopen(OUT,'CONOUT$',O_RDWR) or die "Unable to open console output:$!";
 } else {
 	open(IN,"</dev/tty");
 	*OUT = *IN;
