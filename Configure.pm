@@ -8,7 +8,7 @@
 #  merging into the original, please contact me at kjahds@kjahds.com or
 #  CIS:70705,126
 #
-#  $Id: Configure.pm,v 1.2 2002/01/28 18:40:18 gellyfish Exp $
+#  $Id: Configure.pm,v 2.21 2004/03/02 20:28:11 jonathan Exp $
 # 
 
 # Todo: clean up redudant code in CPP, Compile, Link, and Execute

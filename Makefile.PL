@@ -1,5 +1,5 @@
 # Term::ReadKey Makefile.PL Version 2.18
-# $Id: Makefile.PL,v 1.3 2002/01/28 18:40:18 gellyfish Exp $
+# $Id: Makefile.PL,v 2.21 2004/03/02 20:28:11 jonathan Exp $
 
 use ExtUtils::MakeMaker;
 use Carp;
