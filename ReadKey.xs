@@ -18,8 +18,11 @@
 
  Maintained by Jonathan Stowe <jns@gellyfish.com>
 
- $Id: ReadKey.xs,v 1.6 2002/03/21 07:38:21 gellyfish Exp $
+ $Id: ReadKey.xs,v 1.7 2002/05/21 07:15:11 gellyfish Exp $
 
+ Version 2.20, Tue May 21 07:52:47 BST 2002
+    Patch from Autrijus Tang fixing Win32 Breakage with bleadperl
+    
  Version 2.19, Thu Mar 21 07:25:31 GMT 2002
     Added check for definedness of $_[0] in comparisons in ReadKey, ReadLine
     after reports of warnings.
@@ -1533,9 +1536,9 @@ int Win32PeekChar(PerlIO *file,double delay,char *key)
 	static int keyCount = 0;
 	static char lastKey = 0;
 
-	file = stdin;
+	file = STDIN;
 
-	handle =PerlIO_fileno(file);
+	handle = PerlIO_fileno(file);
 	whnd = /*GetStdHandle(STD_INPUT_HANDLE)*/(HANDLE)_get_osfhandle(handle);
 
 

@@ -1,5 +1,5 @@
 #
-#  $Id: ReadKey.pm,v 1.5 2002/03/21 07:38:21 gellyfish Exp $
+#  $Id: ReadKey.pm,v 1.6 2002/05/21 07:15:11 gellyfish Exp $
 # 
 
 =head1 NAME
@@ -211,7 +211,7 @@ Currently maintained by Jonathan Stowe <jns@gellyfish.com>
 package Term::ReadKey;
 
 
-$VERSION = '2.19';
+$VERSION = '2.20';
 
 require Exporter;
 require AutoLoader;
