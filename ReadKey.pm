@@ -206,7 +206,7 @@ bootstrap Term::ReadKey;
 $UseEnv = 1;
 
 
-%modes=(original => 0, normal => 1, noecho => 2, 
+%modes=(original => 0, restore => 0, normal => 1, noecho => 2, 
 	cbreak => 3, raw => 4, "ultra-raw" => 5);
 
 sub ReadMode {
@@ -217,7 +217,7 @@ sub ReadMode {
 	elsif( $_[0] =~ /^\d/)
 		{ SetReadMode($_[0],$fh) }
 	else
-		{ choke("Unknown terminal mode `$_[0]'"); }
+		{ croak("Unknown terminal mode `$_[0]'"); }
 }
 
 sub normalizehandle {

@@ -1,4 +1,4 @@
-# Term::ReadKey Makefile.PL Version 2.04
+# Term::ReadKey Makefile.PL Version 2.05
 
 use ExtUtils::MakeMaker;
 use Carp;
@@ -11,7 +11,7 @@ if( $ExtUtils::MakeMaker::Version < 3.5 ) {
 &WriteMakefile(
 	NAME => "Term::ReadKey",
 	DISTNAME => "TermReadKey",
-	VERSION => "2.04",
+	VERSION => "2.05",
 	PM => { "ReadKey.pm" => '$(INST_LIBDIR)/ReadKey.pm'},
 
 # Uncomment these to allow testing of sgtty under Linux. Not needed normally.
@@ -20,13 +20,15 @@ if( $ExtUtils::MakeMaker::Version < 3.5 ) {
 );
 
 sub MY::realclean {
-	$_ = MM->realclean();
+	my $self = shift;
+	$_ = $self->MM::realclean();
 	s/\t/\trm -f cchars.h\n\t/;
 	$_;
 }
 
 sub MY::top_targets {
-	$_ = MM->top_targets();
+	my $self = shift;
+	$_ = $self->MM::top_targets();
 	$_ .= "
 
 sgtty cchars.h: genchars.pl
@@ -43,7 +45,8 @@ ReadKey.c: cchars.h
 }
 
 sub MY::test {
-	$_ = MM->test();
+	my $self = shift;
+	$_ = $self->MM::test();
 	s/test.pl/-w test.pl/;
 	$_;
 }

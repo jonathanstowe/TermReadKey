@@ -13,6 +13,9 @@
  Written by Kenneth Albanowski on Thu Oct  6 11:42:20 EDT 1994
  Contact at kjahds@kjahds.com or CIS:70705,126
 
+ Version 2.05, Tue Mar 12 19:08:33 EST 1996
+ 	Changed poll support so it works. Cleaned up .pm a little.
+ 	
  Version 2.04, Tue Oct 10 05:35:48 EDT 1995
  	Whoops. Changed GetTermSize back so that GSIZE code won't be
  	compiled if GWINSZ is being used. Also took ts_xxx and ts_yyy
@@ -90,8 +93,6 @@
 
  Things to do:
 
-	Tell Configure about poll. 
-
 	Make sure the GetSpeed function is doing it's best to separate ispeed
 	from ospeed.
 	
@@ -99,12 +100,6 @@
 	used, among other things.
 
 ***/
-
-
-/*You can uncomment the following if you want to try the poll() support*/
-
-/*#define I_POLL*/
-/*#define HAS_POLL*/
 
 
 /* Using these defines, you can elide anything you know 
@@ -211,13 +206,9 @@
 # endif
 #endif
 
-/* Perl Configure currently doesn't include I_POLL. Sorry. */
-
 #if !defined(DONT_USE_POLL)
 # ifdef HAS_POLL
-#  ifdef I_POLL
-#   include <poll.h>
-#  endif
+#  include <poll.h>
 #  define Have_poll
 # endif
 #endif
