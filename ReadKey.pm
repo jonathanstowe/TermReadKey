@@ -1,3 +1,7 @@
+#
+#  $Id: ReadKey.pm,v 1.4 2002/01/28 18:40:18 gellyfish Exp $
+# 
+
 =head1 NAME
 
 Term::ReadKey - A perl module for simple terminal control
@@ -207,7 +211,7 @@ Currently maintained by Jonathan Stowe <jns@gellyfish.com>
 package Term::ReadKey;
 
 
-$VERSION = '2.17';
+$VERSION = '2.18';
 
 require Exporter;
 require AutoLoader;

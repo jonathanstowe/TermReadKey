@@ -35,11 +35,12 @@ an ANSI C compiler has been present since Perl 5.005 so it is likely that
 at some point in the future this module will follow that requirement too.
 If you have any difficulties with older Perl's please contact the maintainer.
 
-New in version 2.10 is support for Win32. This has only been tested with one
-particular binary distribution and compiler, so it may need a bit of
-exercise. There is are also some limitations, with the ReadLine call being
-unavailable, and ReadKey possibly generating bad results if you are reading
-from multiple consoles, and key repeat is used.
+New in version 2.10 is support for Win32. Version 2.17 has been tested
+with ActivePerl build 623 and Visual Studio 6 and found to work as
+expected, but do not be surprised if it fails with another compiler
+or distribution.  There are  some limitations, with the ReadLine call
+being unavailable, and ReadKey possibly generating bad results if you
+are reading from multiple consoles, and key repeat is used.
 
 VERY IMPORTANT: In 2.00, the ReadKey/ReadLine arguments changed. Now, if
 you want a call that is non-blocking and returns immediately if no

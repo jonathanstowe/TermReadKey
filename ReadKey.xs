@@ -18,6 +18,12 @@
 
  Maintained by Jonathan Stowe <jns@gellyfish.com>
 
+ $Id: ReadKey.xs,v 1.5 2002/02/10 13:13:35 gellyfish Exp $
+
+ Version 2.18, Sun Feb 10 13:06:57 GMT 2002
+    Altered prototyping style after reports of compile failures on
+    Windows.
+
  Version 2.17, Fri Jan 25 06:58:47 GMT 2002
     The '_' macro for non-ANSI compatibility was removed in 5.7.2
 
@@ -386,9 +392,7 @@ int getspeed _((PerlIO * file, I32 *in, I32 * out ));
 
 
 #ifdef VIOMODE
-int GetTermSizeVIO(file,retwidth,retheight,xpix,ypix)
-PerlIO * file;
-int *retwidth, *retheight, *xpix, *ypix;
+int GetTermSizeVIO(PerlIO *file,int *retwidth,int *retheight,int *xpix,int *ypix)
 {
 	/*int handle=PerlIO_fileno(file);
 
@@ -410,19 +414,16 @@ int *retwidth, *retheight, *xpix, *ypix;
         return 0;
 }
 #else
-int GetTermSizeVIO(file,retwidth,retheight,xpix,ypix)
-PerlIO * file;
-int *retwidth, *retheight, *xpix, *ypix;
+int GetTermSizeVIO(PerlIO *file,int * retwidth,int *retheight, int *xpix,int *ypix)
 {
 	croak("TermSizeVIO is not implemented on this architecture");
+        return 0;
 }
 #endif
 
 
 #if defined(TIOCGWINSZ) && !defined(DONT_USE_GWINSZ)
-int GetTermSizeGWINSZ(file,retwidth,retheight,xpix,ypix)
-PerlIO * file;
-int *retwidth, *retheight, *xpix, *ypix;
+int GetTermSizeGWINSZ(PerlIO *file,int *retwidth,int *retheight,int *xpix,int *ypix)
 {
 	int handle=PerlIO_fileno(file);
 	struct winsize w;
@@ -437,18 +438,15 @@ int *retwidth, *retheight, *xpix, *ypix;
 
 }
 #else
-int GetTermSizeGWINSZ(file,retwidth,retheight,xpix,ypix)
-PerlIO * file;
-int *retwidth, *retheight, *xpix, *ypix;
+int GetTermSizeGWINSZ(PerlIO *file,int *retwidth,int *retheight,int *xpix,int *ypix)
 {
 	croak("TermSizeGWINSZ is not implemented on this architecture");
+        return 0;
 }
 #endif
 
 #if (!defined(TIOCGWINSZ) || defined(DONT_USE_GWINSZ)) && (defined(TIOCGSIZE) && !defined(DONT_USE_GSIZE))
-int GetTermSizeGSIZE(file,retwidth,retheight,xpix,ypix)
-PerlIO * file;
-int *retwidth, *retheight, *xpix, *ypix;
+int GetTermSizeGSIZE(PerlIO *file,int *retwidth,int *retheight,int *xpix,int *ypix)
 {
 	int handle=PerlIO_fileno(file);
 
@@ -463,18 +461,15 @@ int *retwidth, *retheight, *xpix, *ypix;
 	}
 }
 #else
-int GetTermSizeGSIZE(file,retwidth,retheight,xpix,ypix)
-PerlIO * file;
-int *retwidth, *retheight, *xpix, *ypix;
+int GetTermSizeGSIZE(PerlIO *file,int *retwidth,int *retheight,int *xpix,int *ypix)
 {
 	croak("TermSizeGSIZE is not implemented on this architecture");
+        return 0;
 }
 #endif
 
 #ifdef USE_WIN32
-int GetTermSizeWin32(file,retwidth,retheight,xpix,ypix)
-PerlIO * file;
-int *retwidth, *retheight, *xpix, *ypix;
+int GetTermSizeWin32(PerlIO *file,int *retwidth,int *retheight,int *xpix,int *ypix)
 {
 	int handle=PerlIO_fileno(file);
 	HANDLE whnd = (HANDLE)_get_osfhandle(handle);
@@ -497,11 +492,10 @@ int *retwidth, *retheight, *xpix, *ypix;
 		return -1;
 }
 #else
-int GetTermSizeWin32(file,retwidth,retheight,xpix,ypix)
-PerlIO * file;
-int *retwidth, *retheight, *xpix, *ypix;
+int GetTermSizeWin32(PerlIO *file,int *retwidth,int *retheight,int *xpix,int *ypix)
 {
 	croak("TermSizeWin32 is not implemented on this architecture");
+        return 0;
 }
 #endif /* USE_WIN32 */
 
@@ -524,9 +518,7 @@ int termsizeoptions() {
 }
 
 
-int SetTerminalSize(file, width, height, xpix, ypix)
-PerlIO *file;
-int width, height, xpix, ypix;
+int SetTerminalSize(PerlIO *file,int width,int height,int xpix,int ypix)
 {
 	char buffer[10];
 	int handle=PerlIO_fileno(file);
@@ -649,9 +641,7 @@ I32 terminal_speeds[] = {
 	-1,-1
 };
 
-int getspeed(file, in, out)
-PerlIO * file;
-I32 *in, *out;
+int getspeed(PerlIO *file,I32 *in, I32 *out)
 {
 	int handle=PerlIO_fileno(file);
 	int i;
@@ -758,9 +748,7 @@ struct tbuffer {
 HV * filehash; /* Used to store the original terminal settings for each handle*/
 HV * modehash; /* Used to record the current terminal "mode" for each handle*/
 
-void ReadMode(file,mode)
-PerlIO * file;
-int mode;
+void ReadMode(PerlIO *file,int mode)
 {
 	dTHR;
 	int handle;
@@ -1444,9 +1432,7 @@ understand this syntax, either fix the checkwaiting call below, or define
 DONT_USE_SELECT. */
 
 #ifdef Have_select
-int selectfile(file,delay)
-PerlIO * file;
-double delay;
+int selectfile(PerlIO *file,double delay)
 {
 	struct timeval t;
 	int handle=PerlIO_fileno(file);
@@ -1475,9 +1461,7 @@ double delay;
 }
 
 #else
-int selectfile(file, delay)
-PerlIO * file;
-double delay;
+int selectfile(PerlIO *file, double delay)
 {
 	croak("select is not supported on this architecture");
 	return 0;
@@ -1485,9 +1469,7 @@ double delay;
 #endif
 
 #ifdef Have_nodelay
-int setnodelay(file, mode)
-PerlIO * file;
-int mode;
+int setnodelay(PerlIO *file, int mode)
 {
 	int handle=PerlIO_fileno(file);
 	int flags;
@@ -1501,9 +1483,7 @@ int mode;
 }
 
 #else
-int setnodelay(file, mode) 
-PerlIO * file;
-int mode;
+int setnodelay(PerlIO *file, int mode) 
 {
 	croak("setnodelay is not supported on this architecture");
 	return 0;
@@ -1511,9 +1491,7 @@ int mode;
 #endif
 
 #ifdef Have_poll
-int pollfile(file,delay)
-PerlIO * file;
-double delay;
+int pollfile(PerlIO *file,double delay)
 {
 	int handle=PerlIO_fileno(file);
 	struct pollfd fds;
@@ -1526,9 +1504,7 @@ double delay;
 	return (poll(&fds,1,(long)(delay * 1000.0))>0);
 } 
 #else
-int pollfile(file,delay) 
-PerlIO * file;
-double delay;
+int pollfile(PerlIO *file,double delay) 
 {
 	croak("pollfile is not supported on this architecture");
 	return 0;
@@ -1543,10 +1519,7 @@ double delay;
 
 */
 
-int Win32PeekChar(file,delay,key)
-PerlIO * file;
-double delay;
-char * key;
+int Win32PeekChar(PerlIO *file,double delay,char *key)
 {
 	int handle;
 	HANDLE whnd;
@@ -1623,10 +1596,7 @@ again:
 
 } 
 #else
-int Win32PeekChar(file, delay, key) 
-PerlIO * file;
-double delay;
-char * key;
+int Win32PeekChar(PerlIO *file, double delay,char *key) 
 {
 	croak("Win32PeekChar is not supported on this architecture");
 	return 0;

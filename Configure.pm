@@ -7,33 +7,54 @@
 #  that you have changed something. If you have a change you think is worth
 #  merging into the original, please contact me at kjahds@kjahds.com or
 #  CIS:70705,126
-
+#
+#  $Id: Configure.pm,v 1.2 2002/01/28 18:40:18 gellyfish Exp $
+# 
 
 # Todo: clean up redudant code in CPP, Compile, Link, and Execute
 #
 
 package Configure;
 
+use strict;
+
+use vars qw(@EXPORT @ISA);
+
 use Carp;
 require Exporter;
-@ISA=(Exporter);
-@EXPORT=qw( CPP Compile Link Execute
-				FindHeader FindLib
-				Apply ApplyHeaders ApplyLibs ApplyHeadersAndLibs 
-				ApplyHeadersAndLibsAndExecute
-				CheckHeader CheckStructure CheckField
-				CheckHSymbol CheckSymbol CheckLSymbol
-				GetSymbol GetTextSymbol GetNumericSymbol 
-				GetConstants);
+@ISA = qw(Exporter);
+
+@EXPORT = qw( CPP 
+              Compile 
+              Link 
+              Execute
+              FindHeader 
+              FindLib
+              Apply 
+              ApplyHeaders 
+              ApplyLibs 
+              ApplyHeadersAndLibs 
+              ApplyHeadersAndLibsAndExecute
+              CheckHeader 
+              CheckStructure 
+              CheckField
+              CheckHSymbol 
+              CheckSymbol 
+              CheckLSymbol
+              GetSymbol 
+              GetTextSymbol 
+              GetNumericSymbol 
+              GetConstants);
 
 use Cwd;
 use Config;
-($C_usrinc, $C_libpth, $C_cppstdin, $C_cppflags, $C_cppminus,
+
+my ($C_usrinc, $C_libpth, $C_cppstdin, $C_cppflags, $C_cppminus,
 $C_ccflags,$C_ldflags,$C_cc,$C_libs) =
 	 @Config{qw( usrinc libpth cppstdin cppflags cppminus
 					 ccflags ldflags cc libs)};
 
-$Verbose=0;
+my $Verbose = 0;
 
 =head1 NAME
 
@@ -266,6 +287,7 @@ sub FindHeader { #For each supplied header name, find full path
 			$h = $Config{"usrinc"}."/".$h;
 			print "Found as $h.\n" if $Verbose;
 		} else {
+                        my $text;
 			if($text = CPP("#include <$h>",join(" ",@I))) {
 				grepcpp:
 				for (split(/\s+/,(grep(/^\s*#.*$h/,split(/\n/,$text)))[0])) {
@@ -305,13 +327,16 @@ sub FindLib { #For each supplied library name, find full path
 	my($found);
 	#print "Libaries I am searching for: ",join(",",@libs),"\n";
 	#print "Directories: ",join(",",@L),"\n";
+        my $lib;
 	for $lib (@libs) {
 		print "Searching for $lib... " if $Verbose;
 		$found=0;		
 		$lib =~ s/^-l//;
 		if($lib eq "") {$lib=undef; next}
 		next if -f $lib;
+                my $path;
 		for $path (@L) {
+                        my ( $fullname, @fullname );
 			print "Searching $path for $lib...\n" if $Verbose;
 			if (@fullname=<${path}/lib${lib}.${so}.[0-9]*>){
 				$fullname=$fullname[-1]; #ATTN: 10 looses against 9!
@@ -324,7 +349,7 @@ sub FindLib { #For each supplied library name, find full path
 				warn "$lib not found in $path\n" if $Verbose;
 				next;
 			}
-			warn "'-l$thislib' found at $fullname\n" if $Verbose;
+			warn "'-l$lib' found at $fullname\n" if $Verbose;
 			$lib = $fullname;
 			$found=1;
 		}
@@ -640,7 +665,7 @@ with a name that matches /[A-Z0-9_]+/. Returns the list of names.
 sub GetConstants { # Try to grep constants out of a header
 	my(@headers) = @_;
 	@headers = FindHeader(@headers);
-	local(%seen);
+	my %seen;
 	my(%results);
 	map($seen{$_}=1,@headers);
 	while(@headers) {
@@ -672,46 +697,49 @@ and it may simply not be capable of working on some systems.
 
 =cut
 
-$firstdeduce=1;
+my $firstdeduce = 1;
 sub DeducePrototype {
+
+        my (@types, $checkreturn, $checknilargs, $checkniletcargs, $checkreturnnil);
+        
 	if($firstdeduce) {
 		$firstdeduce=0;
-		$checknumber=!Compile("extern int func(int a,int b); 
+		my $checknumber=!Compile("extern int func(int a,int b); 
 									 extern int func(int a,int b,int c); 
 									 main(){}");
 		$checkreturn=!Compile("extern int func(int a,int b); 
 									 extern long func(int a,int b); 
 									 main(){}");
-		$checketc=   !Compile("extern int func(int a,int b); 
+		my $checketc=   !Compile("extern int func(int a,int b); 
 									 extern long func(int a,...); 
 									 main(){}");
-		$checknumberetc=!Compile("extern int func(int a,int b); 
+		my $checknumberetc=!Compile("extern int func(int a,int b); 
 									 extern int func(int a,int b,...); 
 									 main(){}");
-		$checketcnumber=!Compile("extern int func(int a,int b,int c,...); 
+		my $checketcnumber=!Compile("extern int func(int a,int b,int c,...); 
 									 extern int func(int a,int b,...); 
 									 main(){}");
-		$checkargtypes=!Compile("extern int func(int a); 
+		my $checkargtypes=!Compile("extern int func(int a); 
 									 extern int func(long a); 
 									 main(){}");
-		$checkargsnil=!Compile("extern int func(); 
+		my $checkargsnil=!Compile("extern int func(); 
 									 extern int func(int a,int b,int c); 
 									 main(){}");
 		$checknilargs=!Compile("extern int func(int a,int b,int c); 
 									 extern int func(); 
 									 main(){}");
-		$checkargsniletc=!Compile("extern int func(...); 
+		my $checkargsniletc=!Compile("extern int func(...); 
 									 extern int func(int a,int b,int c); 
 									 main(){}");
 		$checkniletcargs=!Compile("extern int func(int a,int b,int c); 
 									 extern int func(...); 
 									 main(){}");
 
-		$checkconst=!Compile("extern int func(const int * a);
+		my $checkconst=!Compile("extern int func(const int * a);
 										extern int func(int * a);
 										main(){ }");
 
-		$checksign=!Compile("extern int func(int a);
+		my $checksign=!Compile("extern int func(int a);
 										extern int func(unsigned int a);
 										main(){ }");
 
@@ -731,6 +759,7 @@ sub DeducePrototype {
 		$Verbose=0;
 
 		# Attempt to remove duplicate types (if any) from type list
+                my ( $i, $j );
 		if($checkargtypes) {
 			for ($i=0;$i<=$#types;$i++) {
 				for ($j=$i+1;$j<=$#types;$j++) {
@@ -779,9 +808,9 @@ sub DeducePrototype {
 	@headers = CheckHSymbol($function,@headers);
 	return undef if !@headers;
 
-	$rettype = undef;
-	@args = ();
-	@validcount = ();
+	my $rettype = undef;
+	my @args = ();
+	my @validcount = ();
 
 	# Can we check the return type without worry about arguements?
 	if($checkreturn and (!$checknilargs or !$checkniletcargs)) {
@@ -797,8 +826,8 @@ sub DeducePrototype {
 		die "No way to deduce function prototype in a rational amount of time";
 	}
 
-	$numargs=-1;
-	$varargs=0;
+	my $numargs=-1;
+	my $varargs=0;
 	for (0..32) {
 			if(ApplyHeaders("main(){ $function(".join(",",("0") x $_).");}",@headers)) {
 				$numargs=$_;

@@ -1,4 +1,5 @@
-# Term::ReadKey Makefile.PL Version 2.14
+# Term::ReadKey Makefile.PL Version 2.18
+# $Id: Makefile.PL,v 1.3 2002/01/28 18:40:18 gellyfish Exp $
 
 use ExtUtils::MakeMaker;
 use Carp;
@@ -8,11 +9,11 @@ if( $mm_version < 3.5 ) {
         croak("Sorry, but MakeMaker 3.5 or better is needed to build this package.");
 }
 
-#$Verbose = 0;
 &WriteMakefile(
-	NAME => "Term::ReadKey",
-	DISTNAME => "TermReadKey",
-	VERSION_FROM => "ReadKey.pm",
+	NAME         => 'Term::ReadKey',
+	DISTNAME     => 'TermReadKey',
+	VERSION_FROM => 'ReadKey.pm',
+        XSPROTOARG   => '-noprototypes',
 	PM => { "ReadKey.pm" => '$(INST_LIBDIR)/ReadKey.pm'},
 
 	'dist' => { COMPRESS=>"gzip", SUFFIX=>"gz" },
