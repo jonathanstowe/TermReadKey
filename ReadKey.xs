@@ -13,6 +13,9 @@
  Written by Kenneth Albanowski on Thu Oct  6 11:42:20 EDT 1994
  Contact at kjahds@kjahds.com or CIS:70705,126
  
+ Version 2.07, Sun Jan 26 19:11:56 EST 1997
+    Added $VERSION to .pm.
+
  Version 2.06, Tue Nov 26 01:47:09 EST 1996
     Added PERLIO support and removed duplicate declaration in .pm.
 
