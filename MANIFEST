@@ -1,0 +1,8 @@
+ReadKey.pm
+ReadKey.xs
+genchars.pl
+MANIFEST
+Makefile.PL
+README
+test.pl
+Configure.pm
