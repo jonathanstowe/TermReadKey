@@ -208,11 +208,11 @@ XS(XS_Term__ReadKey_SetControlChars)
 			int i;
 			char * name, value;
 			for(i=0;i+1<items;i+=2) {
-				name = SvPV(ST(i),na);
+				name = SvPV(ST(i),PL_na);
 				if( SvIOKp(ST(i+1)) || SvNOKp(ST(i+1)) )/* If Int or Float */
 					value = (char)SvIV(ST(i+1));         /* Store int value */
 				else                                    /* Otherwise */
-					value = SvPV(ST(i+1),na)[0];          /* Use first char of PV */
+					value = SvPV(ST(i+1),PL_na)[0];          /* Use first char of PV */
 
 	if (0) ;					".join('',map("
 #if defined($values[$_]) && ($values[$_] < LEGALMAXCC)	"."
@@ -424,11 +424,11 @@ XS(XS_Term__ReadKey_SetControlChars)
 			int i;
 			char * name, value;
 			for(i=0;i+1<items;i+=2) {
-				name = SvPV(ST(i),na);
+				name = SvPV(ST(i),PL_na);
 				if( SvIOKp(ST(i+1)) || SvNOKp(ST(i+1)) )/* If Int or Float */
 					value = (char)SvIV(ST(i+1));         /* Store int value */
 				else                                    /* Otherwise */
-					value = SvPV(ST(i+1),na)[0];          /* Use first char of PV */
+					value = SvPV(ST(i+1),PL_na)[0];          /* Use first char of PV */
 
 	if (0) ;					".join('',map("
 	else if(strcmp(name,cc_names[$_])==0) /* $values[$_] */ 

@@ -204,7 +204,7 @@ Kenneth Albanowski <kjahds@kjahds.com>
 
 package Term::ReadKey;
 
-$VERSION = "2.12";
+$VERSION = "2.13";
 
 require Exporter;
 require AutoLoader;

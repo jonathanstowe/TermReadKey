@@ -3,9 +3,7 @@
 #include "EXTERN.h"
 #include "perl.h"
 #include "XSUB.h"
-#ifndef PATCHLEVEL
-# include "patchlevel.h"
-#endif
+#include "ppport.h"
 
 /*******************************************************************
 
@@ -15,6 +13,9 @@
 
  Written by Kenneth Albanowski on Thu Oct  6 11:42:20 EDT 1994
  Contact at kjahds@kjahds.com or CIS:70705,126
+ 
+ Version 2.13, Wed Mar 24 20:46:06 EST 1999
+ 	Adapted to ppport.h 1.006.
 
  Version 2.12, Wed Jan  7 10:33:11 EST 1998
  	Slightly modified test and error reporting for Win32.
@@ -191,7 +192,7 @@
 #		define DONT_USE_NODELAY
 #		define USE_WIN32
 #		include <io.h>
-#		if defined(_get_osfhandle) && (PATCHLEVEL == 4) && (SUBVERSION < 5)
+#		if defined(_get_osfhandle) && (PERL_PATCHLEVEL == 4) && (PERL_SUBVERSION < 5)
 #			undef _get_osfhandle
 #			if defined(_MSC_VER)
 #				define level _cnt
@@ -313,12 +314,11 @@
 #endif
 
 
-
 #define DisableFlush (1) /* Should flushing mode changes be enabled?
 		            I think not for now. */
 
 
-#define STDIN IoIFP(GvIOp(stdingv))
+#define STDIN IoIFP(GvIOp(PL_stdingv))
 
 #include "cchars.h"
 
@@ -797,7 +797,7 @@ int mode;
 		SV ** temp;
 		if(!(temp=hv_fetch(filehash,(char*)&handle,sizeof(int),0))) 
 			croak("Unable to retrieve stashed terminal settings.\n");
-		memcpy(&savebuf,SvPV(*temp,na),sizeof(struct tbuffer));
+		memcpy(&savebuf,SvPV(*temp,PL_na),sizeof(struct tbuffer));
 		if(!(temp=hv_fetch(modehash,(char*)&handle,sizeof(int),0))) 
 			croak("Unable to retrieve stashed terminal mode.\n");
 		oldmode=SvIV(*temp);
@@ -1684,7 +1684,7 @@ Win32PeekChar(file, delay)
 		if (Win32PeekChar(file, delay, &key))
 			RETVAL = newSVpv(&key, 1);
 		else
-			RETVAL = newSVsv(&sv_undef);
+			RETVAL = newSVsv(&PL_sv_undef);
 	}
 	OUTPUT:
 	RETVAL

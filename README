@@ -1,6 +1,6 @@
- Term::ReadKey 2.12 - Change terminal modes, and perform non-blocking reads.
+ Term::ReadKey 2.13 - Change terminal modes, and perform non-blocking reads.
 
- Copyright (C) 1994-1997 Kenneth Albanowski. Unlimited distribution and/or
+ Copyright (C) 1994-1999 Kenneth Albanowski. Unlimited distribution and/or
  modification is allowed as long as this copyright notice remains intact.
 
 This module, ReadKey, provides ioctl control for terminals and Win32
