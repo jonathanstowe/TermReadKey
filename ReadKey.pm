@@ -46,13 +46,13 @@ values:
     raw
     ultra-raw
 
-These functions are automatically applied to the STDIN handle if no other
-handle is supplied. Modes 0 and 5 have some special properties worth
-mentioning: not only will mode 0 restore original settings, but it cause the
-next ReadMode call to save a new set of default settings. Mode 5 is similar
-to mode 4, except no CR/LF translation is performed, and if possible, parity
-will be disabled (only if not being used by the terminal, however. It is no different
-from mode 4 under Windows.)
+These functions are automatically applied to the STDIN handle if no
+other handle is supplied. Modes 0 and 5 have some special properties
+worth mentioning: not only will mode 0 restore original settings, but it
+cause the next ReadMode call to save a new set of default settings. Mode
+5 is similar to mode 4, except no CR/LF translation is performed, and if
+possible, parity will be disabled (only if not being used by the terminal,
+however. It is no different from mode 4 under Windows.)
 
 If you are executing another program that may be changing the terminal mode,
 you will either want to say
@@ -200,11 +200,14 @@ This call does nothing under Windows.
 
 Kenneth Albanowski <kjahds@kjahds.com>
 
+Currently maintained by Jonathan Stowe <jns@gellyfish.com>
+
 =cut
 
 package Term::ReadKey;
 
-$VERSION = '2.16';
+
+$VERSION = '2.17';
 
 require Exporter;
 require AutoLoader;

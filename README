@@ -1,7 +1,10 @@
- Term::ReadKey 2.13 - Change terminal modes, and perform non-blocking reads.
+ Term::ReadKey 2.17 - Change terminal modes, and perform non-blocking reads.
 
- Copyright (C) 1994-1999 Kenneth Albanowski. Unlimited distribution and/or
- modification is allowed as long as this copyright notice remains intact.
+ Copyright (C) 1994-1999 Kenneth Albanowski. 
+               2001,2002 Jonathan Stowe
+
+ Unlimited distribution and/or modification is allowed as long as this 
+ copyright notice remains intact.
 
 This module, ReadKey, provides ioctl control for terminals and Win32
 consoles so the input modes can be changed (thus allowing reads of a single
@@ -14,6 +17,23 @@ with perl 5.001, so now is a good time to upgrade if you haven't already.)
 To install, unpack somewhere, type "perl Makefile.PL", and then "make test".
 If the compilation and the tests are successful, then change to root and run
 "make install".
+
+As of 2.17 the interactive test has been removed as the default for the
+convenience of automated installers, CPAN-Testers and so on.  The non
+interactive tests whilst confirming that the module has built correctly
+and has a good chance of working correctly cannot determine whether the
+effect as observed on the screen is correct so you might want to run:
+
+   perl -Mblib test.pl interactive
+
+before you run 'make install'.
+
+Also from 2.17 this module has to provide its own support for compilers
+that can't take function prototypes as with Perl 5.8.0 this last vestige
+of support for non-ANSI compilers will disappear.  The requirement for
+an ANSI C compiler has been present since Perl 5.005 so it is likely that
+at some point in the future this module will follow that requirement too.
+If you have any difficulties with older Perl's please contact the maintainer.
 
 New in version 2.10 is support for Win32. This has only been tested with one
 particular binary distribution and compiler, so it may need a bit of
@@ -89,8 +109,8 @@ pairs and will modify the control character settings.
 Note that it is entirely possible that there are portability problems with
 the routines in ReadKey.xs. If you find any problems, including compilation
 failures, or control characters not supported by Set/GetControlChars,
-_please_ tell me about them, by mailing me at kjahds@kjahds.com, or
-CIS:70705,126, or lastly contacting perl5-porters@nicoh.com. Any problems
+_please_ tell me about them, by mailing the maintainer at jns@gellyfish.com,
+ or lastly contacting perl5-porters@perl.org. Any problems
 will get fixed if at all possible, but that's not going to happen if I don't
 know about them.
 

@@ -53,3 +53,8 @@ sub MY::test {
 	s/test.pl/-w test.pl/;
 	$_;
 }
+
+sub MY::test_interactive
+{
+    return "Fooo";
+}

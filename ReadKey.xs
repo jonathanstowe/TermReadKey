@@ -16,6 +16,11 @@
  Written by Kenneth Albanowski on Thu Oct  6 11:42:20 EDT 1994
  Contact at kjahds@kjahds.com or CIS:70705,126
 
+ Maintained by Jonathan Stowe <jns@gellyfish.com>
+
+ Version 2.17, Fri Jan 25 06:58:47 GMT 2002
+    The '_' macro for non-ANSI compatibility was removed in 5.7.2
+
  Version 2.16, Thu Nov 29 21:19:03 GMT 2001
     It appears that the genchars.pl bit of the patch didnt apply
     Applied the new ppport.h from Devel::PPPort
@@ -327,6 +332,16 @@
 # endif
 #endif
 
+
+/* Fix up the disappearance of the '_' macro in Perl 5.7.2 */
+
+#ifndef _
+#  ifdef CAN_PROTOTYPE
+#    define _(args) args
+#  else
+#    define _(args) ()
+#  endif
+#endif
 
 #define DisableFlush (1) /* Should flushing mode changes be enabled?
 		            I think not for now. */

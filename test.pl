@@ -1,3 +1,5 @@
+#!/usr/bin/perl -w
+
 #use strict vars;
 
 #use Term::ReadKey qw( ReadMode ReadKey );
@@ -12,9 +14,16 @@
 #ReadMode 0;
 #__END__;
 
-#BEGIN {@INC = ("/home/kjahds/perl5/perl5.000/lib/auto","/home/kjahds/perl5/perl5.000/lib"); }
 
+my $interactive = (@ARGV && $ARGV[0] =~ /interactive/ );
+
+BEGIN { print "1 .. 8\n"; }
+END   { print "not ok 1\n" unless $loaded }
 use Term::ReadKey;
+
+$loaded = 1;
+print "ok 1\n";
+
 use Fcntl;
 
 if ($^O =~ /Win32/i) {
@@ -28,14 +37,21 @@ if ($^O =~ /Win32/i) {
 *IN=*IN; # Make single-use warning go away
 $|=1;
 
-print "\nAnd now on to the tests!\n\n";
 
 
-#print join(",",GetTerminalSize(\IN)),"\n";
-#print join(",",GetTerminalSize("IN")),"\n";
-#print join(",",GetTerminalSize(*IN)),"\n";
-#print join(",",GetTerminalSize(\*IN)),"\n";
-#__END__;
+my $size1 = join(",",GetTerminalSize(\IN));
+my $size2 = join(",",GetTerminalSize("IN"));
+my $size3 = join(",",GetTerminalSize(*IN));
+my $size4 = join(",",GetTerminalSize(\*IN));
+
+if (($size1 eq $size2) && ($size2 eq $size3) && ($size3 eq $size4 ))
+{
+  print "ok 2\n";
+}
+else
+{
+  print "not ok 2\n";
+}
 
 sub makenicelist {
 	my(@list) = @_;
@@ -63,72 +79,129 @@ sub makeunnice {
 	$char;
 }
 
-print "\n";
+
+my $response;
+
+eval {
 
 if( &Term::ReadKey::termoptions() == 1) {
-	print "Term::ReadKey is using TERMIOS, as opposed to TERMIO or SGTTY.\n";
+        $response = "Term::ReadKey is using TERMIOS, as opposed to TERMIO or SGTTY.\n";
 } elsif( &Term::ReadKey::termoptions() == 2) {
-	print "Term::ReadKey is using TERMIO, as opposed to TERMIOS or SGTTY.\n";
+	$response = "Term::ReadKey is using TERMIO, as opposed to TERMIOS or SGTTY.\n";
 } elsif( &Term::ReadKey::termoptions() == 3) {
-	print "Term::ReadKey is using SGTTY, as opposed to TERMIOS or TERMIO.\n";
+	$response = "Term::ReadKey is using SGTTY, as opposed to TERMIOS or TERMIO.\n";
 } elsif( &Term::ReadKey::termoptions() == 4) {
-	print "Term::ReadKey is trying to make do with stty; facilites may be limited.\n";
+	$response = "Term::ReadKey is trying to make do with stty; facilites may be limited.\n";
 } elsif( &Term::ReadKey::termoptions() == 5) {
-	print "Term::ReadKey is using Win32 functions.\n";
+	$response = "Term::ReadKey is using Win32 functions.\n";
 } else {
-	print "Term::ReadKey could not find any way to manipulate the terminal.\n";
+	$response = "Term::ReadKey could not find any way to manipulate the terminal.\n";
 }
 
-print "\n";
+   print "ok 3\n";
+};
 
-push(@modes,"O_NODELAY") if &Term::ReadKey::blockoptions() & 1;
-push(@modes,"poll()") if &Term::ReadKey::blockoptions() & 2;
-push(@modes,"select()") if &Term::ReadKey::blockoptions() & 4;
-push(@modes,"Win32") if &Term::ReadKey::blockoptions() & 8;
+print "not ok 3\n" if $@;
 
-if(&Term::ReadKey::blockoptions()==0)
+print $response if $interactive;
+
+eval
 {
-	print "No methods found to implement non-blocking reads.\n";
-	print " (If your computer supports poll(), you might like to read through ReadKey.xs)\n";
-}
-else
+  push(@modes,"O_NODELAY") if &Term::ReadKey::blockoptions() & 1;
+  push(@modes,"poll()") if &Term::ReadKey::blockoptions() & 2;
+  push(@modes,"select()") if &Term::ReadKey::blockoptions() & 4;
+  push(@modes,"Win32") if &Term::ReadKey::blockoptions() & 8;
+
+  print "ok 4\n";
+};
+
+print "not ok 4\n" if $@;
+
+if ($interactive )
 {
+   if(&Term::ReadKey::blockoptions()==0)
+   {
+	   print "No methods found to implement non-blocking reads.\n";
+	   print " (If your computer supports poll(), you might like to read through ReadKey.xs)\n";
+   }
+   else
+   {
 	print "Non-blocking reads possible via ",makenicelist(@modes),".\n";
 	print $modes[0]." will be used. " if @modes>0;
 	print $modes[1]." will be used for timed reads." if @modes>1 and $modes[0] eq "O_NODELAY";
 	print "\n";
+   }
 }
 
-@size = GetTerminalSize(OUT);
 
-if(!@size) {
+eval
+{
+   @size = GetTerminalSize(OUT);
+   print "ok 5\n";
+};
+
+print "not ok 5\n" if $@;
+
+if ( $interactive )
+{
+   if(!@size) {
 	print "GetTerminalSize was incapable of finding the size of your terminal.";
-} else {
+   } else {
 	print "Using GetTerminalSize, it appears that your terminal is\n";
 	print "$size[0] characters wide by $size[1] high.\n\n";
+   }
+
 }
 
-if(GetSpeed) {
-	print "Apparently, you are connected at ",join("/",GetSpeed)," baud.\n";
-} else {
+eval
+{
+  @speeds = GetSpeed();
+  print "ok 6\n";
+};
+
+print "not ok 6\n" if $@;
+
+if ( $interactive )
+{
+   if(@speeds) {
+	print "Apparently, you are connected at ",join("/",@speeds)," baud.\n";
+   } else {
 	print "GetSpeed couldn't tell your connection baud rate.\n\n";
+   }
+   print "\n";
 }
-print "\n";
 
-%chars = GetControlChars(IN);
+eval
+{
+   %chars = GetControlChars(IN);
+   print "ok 7\n";
+};
+
+print "not ok 7\n" if $@;
 
 %origchars = %chars;
 
-for $c (keys %chars) { $chars{$c} = makenice($chars{$c}) }
+if ( $interactive )
+{
+   for $c (keys %chars) { $chars{$c} = makenice($chars{$c}) }
 
-print "Control chars = (",join(', ',map("$_ => $chars{$_}",keys %chars)),")\n";
+   print "Control chars = (",join(', ',map("$_ => $chars{$_}",keys %chars)),")\n";
+}
 
-SetControlChars(%origchars, IN);
+eval
+{
+   SetControlChars(%origchars, IN);
+   print "ok 8\n";
+};
+
+print "not ok 8\n" if $@;
 
 #SetControlChars("FOOFOO"=>"Q");
 #SetControlChars("INTERRUPT"=>"\x5");
 
 END { ReadMode 0, IN; } # Just if something goes weird
+
+exit(0) unless $interactive;
 
 print "\nAnd now for the interactive tests.\n";
 
