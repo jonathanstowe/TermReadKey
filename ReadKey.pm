@@ -176,7 +176,7 @@ settings. The list of valid names is easily available via
 
 package Term::ReadKey;
 
-$VERSION = "2.07";
+$VERSION = "2.08";
 
 require Exporter;
 require AutoLoader;

@@ -13,6 +13,9 @@
  Written by Kenneth Albanowski on Thu Oct  6 11:42:20 EDT 1994
  Contact at kjahds@kjahds.com or CIS:70705,126
  
+ Version 2.08, Mon Oct  6 16:07:44 EDT 1997
+    Changed poll.h to sys/poll.h.
+
  Version 2.07, Sun Jan 26 19:11:56 EST 1997
     Added $VERSION to .pm.
 
@@ -170,7 +173,6 @@
 # define DONT_USE_NODELAY
 #endif
 
-
 #if !defined(DONT_USE_NODELAY)
 # ifdef HAS_FCNTL
 #  define Have_nodelay
@@ -214,7 +216,7 @@
 
 #if !defined(DONT_USE_POLL)
 # ifdef HAS_POLL
-#  include <poll.h>
+#  include <sys/poll.h>
 #  define Have_poll
 # endif
 #endif
