@@ -18,7 +18,11 @@
 
  Maintained by Jonathan Stowe <jns@gellyfish.com>
 
- $Id: ReadKey.xs,v 1.5 2002/02/10 13:13:35 gellyfish Exp $
+ $Id: ReadKey.xs,v 1.6 2002/03/21 07:38:21 gellyfish Exp $
+
+ Version 2.19, Thu Mar 21 07:25:31 GMT 2002
+    Added check for definedness of $_[0] in comparisons in ReadKey, ReadLine
+    after reports of warnings.
 
  Version 2.18, Sun Feb 10 13:06:57 GMT 2002
     Altered prototyping style after reports of compile failures on

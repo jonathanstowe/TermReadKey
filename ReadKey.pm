@@ -1,5 +1,5 @@
 #
-#  $Id: ReadKey.pm,v 1.4 2002/01/28 18:40:18 gellyfish Exp $
+#  $Id: ReadKey.pm,v 1.5 2002/03/21 07:38:21 gellyfish Exp $
 # 
 
 =head1 NAME
@@ -211,7 +211,7 @@ Currently maintained by Jonathan Stowe <jns@gellyfish.com>
 package Term::ReadKey;
 
 
-$VERSION = '2.18';
+$VERSION = '2.19';
 
 require Exporter;
 require AutoLoader;
@@ -355,46 +355,60 @@ if(&blockoptions() & 1) # Use nodelay
 		eval <<'DONE';
 		sub ReadKey {
 		  my($File) = normalizehandle((@_>1?$_[1]:\*STDIN));
-		    if($_[0]>0) {
-				if($_[0]) {return undef if &pollfile($File,$_[0])==0}
-		    }
-			if($_[0]<0) {&setnodelay($File,1);}
-			my($value) = getc $File;
-			if($_[0]<0) {&setnodelay($File,0);}
-			$value;
+                  if (defined $_[0] && $_[0] > 0) {
+                    if ($_[0]) {
+                      return undef if &pollfile($File,$_[0]) == 0;
+                    }
+		  }
+                  if (defined $_[0] && $_[0] < 0) {
+                     &setnodelay($File,1);
+                  }
+                  my ($value) = getc $File;
+                  if (defined $_[0] && $_[0] < 0) {
+                     &setnodelay($File,0);
+                  }
+                  $value;
 		}
 		sub ReadLine {
 		  my($File) = normalizehandle((@_>1?$_[1]:\*STDIN));
-		    if($_[0]>0) {
-				if($_[0]) {return undef if &pollfile($File,$_[0])==0}
-		    }
-			if($_[0]<0) {&setnodelay($File,1)};
-			my($value)=scalar(<$File>);
-			if($_[0]<0) {&setnodelay($File,0)};
-			$value;
+
+                  if (defined $_[0] && $_[0] > 0) {
+                     if ($_[0]) {
+                       return undef if &pollfile($File,$_[0]) == 0;
+                     }
+		  }
+                  if (defined $_[0] && $_[0] < 0) {
+                     &setnodelay($File,1)
+                  };
+                  my ($value) = scalar(<$File>);
+                  if ( defined $_[0] && $_[0]<0 ) {
+                    &setnodelay($File,0)
+                  };
+                  $value;
 		}
 DONE
-	} elsif(&blockoptions() & 4) #select
+	} 
+        elsif(&blockoptions() & 4) #select
 	{
 		eval <<'DONE';
 		sub ReadKey {
 		  my($File) = normalizehandle((@_>1?$_[1]:\*STDIN));
-		    if($_[0]>0) {
+                  if(defined $_[0] && $_[0]>0) {
 				if($_[0]) {return undef if &selectfile($File,$_[0])==0}
 		    }
-			if($_[0]<0) {&setnodelay($File,1);}
+			if(defined $_[0] && $_[0]<0) {&setnodelay($File,1);}
 			my($value) = getc $File;
-			if($_[0]<0) {&setnodelay($File,0);}
+			if(defined $_[0] && $_[0]<0) {&setnodelay($File,0);}
 			$value;
 		}
 		sub ReadLine {
 		  my($File) = normalizehandle((@_>1?$_[1]:\*STDIN));
-		    if($_[0]>0) {
+		    if(defined $_[0] && $_[0]>0) {
 				if($_[0]) {return undef if &selectfile($File,$_[0])==0}
 		    }
-			if($_[0]<0) {&setnodelay($File,1)};
+			if(defined $_[0] && $_[0]<0) {&setnodelay($File,1)};
 			my($value)=scalar(<$File>);
-			if($_[0]<0) {&setnodelay($File,0)};
+			if(defined $_[0] && $_[0]<0) {&setnodelay($File,0)};
 			$value;
 		}
 DONE
@@ -402,7 +416,7 @@ DONE
 		eval <<'DONE';
 		sub ReadKey {
 		  my($File) = normalizehandle((@_>1?$_[1]:\*STDIN));
-		    if($_[0]>0) {
+		    if(defined $_[0] && $_[0]>0) {
 		    	# Nothing better seems to exist, so I just use time-of-day
 		    	# to timeout the read. This isn't very exact, though.
 		    	$starttime=time;
@@ -416,14 +430,14 @@ DONE
 				&setnodelay($File,0);
 				return $value;
 		    }
-			if($_[0]<0) {&setnodelay($File,1);}
+			if(defined $_[0] && $_[0]<0) {&setnodelay($File,1);}
 			my($value) = getc $File;
-			if($_[0]<0) {&setnodelay($File,0);}
+			if(defined $_[0] && $_[0]<0) {&setnodelay($File,0);}
 			$value;
 		}
 		sub ReadLine {
 		  my($File) = normalizehandle((@_>1?$_[1]:\*STDIN));
-		    if($_[0]>0) {
+		    if(defined $_[0] && $_[0]>0) {
 		    	# Nothing better seems to exist, so I just use time-of-day
 		    	# to timeout the read. This isn't very exact, though.
 		    	$starttime=time;
@@ -437,9 +451,9 @@ DONE
 				&setnodelay($File,0);
 				return $value;
 		    }
-			if($_[0]<0) {&setnodelay($File,1)};
+			if(defined $_[0] && $_[0]<0) {&setnodelay($File,1)};
 			my($value)=scalar(<$File>);
-			if($_[0]<0) {&setnodelay($File,0)};
+			if(defined $_[0] && $_[0]<0) {&setnodelay($File,0)};
 			$value;
 		}
 DONE
@@ -450,12 +464,16 @@ elsif(&blockoptions() & 2) # Use poll
 	eval <<'DONE';
 	sub ReadKey {
 	  my($File) = normalizehandle((@_>1?$_[1]:\*STDIN));
-		if($_[0]!=0) {return undef if &pollfile($File,$_[0])==0}
+		if(defined $_[0] && $_[0] != 0) {
+                     return undef if &pollfile($File,$_[0]) == 0
+                }
 		getc $File;
 	}
 	sub ReadLine {
 	  my($File) = normalizehandle((@_>1?$_[1]:\*STDIN));
-		if($_[0]!=0) {return undef if &pollfile($File,$_[0])==0}
+		if(defined $_[0] && $_[0]!=0) {
+                     return undef if &pollfile($File,$_[0]) == 0;
+                }
 		scalar(<$File>);
 	}
 DONE
@@ -465,12 +483,16 @@ elsif(&blockoptions() & 4) # Use select
 	eval <<'DONE';
 	sub ReadKey {
 	  my($File) = normalizehandle((@_>1?$_[1]:\*STDIN));
-		if($_[0]!=0) {return undef if &selectfile($File,$_[0])==0}
+		if(defined $_[0] && $_[0] !=0 ) {
+                     return undef if &selectfile($File,$_[0])==0
+                }
 		getc $File;
 	}
 	sub ReadLine {
 	  my($File) = normalizehandle((@_>1?$_[1]:\*STDIN));
-		if($_[0]!=0) {return undef if &selectfile($File,$_[0])==0}
+		if(defined $_[0] && $_[0] != 0) {
+                     return undef if &selectfile($File,$_[0]) == 0;
+                }
 		scalar(<$File>);
 	}
 DONE

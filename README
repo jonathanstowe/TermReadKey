@@ -40,7 +40,10 @@ with ActivePerl build 623 and Visual Studio 6 and found to work as
 expected, but do not be surprised if it fails with another compiler
 or distribution.  There are  some limitations, with the ReadLine call
 being unavailable, and ReadKey possibly generating bad results if you
-are reading from multiple consoles, and key repeat is used.
+are reading from multiple consoles, and key repeat is used.  For Win32
+users without a C compiler there is a precompiled version of this module
+available as a package for ActivePerl, it is probably a few versions behind
+the latest release but has been reported to work well.
 
 VERY IMPORTANT: In 2.00, the ReadKey/ReadLine arguments changed. Now, if
 you want a call that is non-blocking and returns immediately if no
