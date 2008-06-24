@@ -25,6 +25,11 @@ functions for working with terminals. One of the main goals is to have the
 functions as portable as possible, so you can just plug in "use
 Term::ReadKey" on any architecture and have a good likelyhood of it working.
 
+Version 2.30.01:
+Added handling of arrows, page up/down, home/end, insert/delete keys 
+under Win32. These keys emit xterm-compatible sequences.
+Works with Term::ReadLine::Perl.
+
 =over 8
 
 =item ReadMode MODE [, Filehandle]
@@ -210,7 +215,7 @@ Currently maintained by Jonathan Stowe <jns@gellyfish.com>
 
 package Term::ReadKey;
 
-$VERSION = '2.30';
+$VERSION = '2.30.01';
 
 require Exporter;
 require AutoLoader;
@@ -247,6 +252,8 @@ bootstrap Term::ReadKey;
 
 $UseEnv = 1;
 
+$CurrentMode = 0;
+
 %modes = (
     original    => 0,
     restore     => 0,
@@ -261,9 +268,10 @@ sub ReadMode
 {
     my ($mode) = $modes{ $_[0] };
     my ($fh) = normalizehandle( ( @_ > 1 ? $_[1] : \*STDIN ) );
-    if ( defined($mode) ) { SetReadMode( $mode, $fh ) }
-    elsif ( $_[0] =~ /^\d/ ) { SetReadMode( $_[0], $fh ) }
+    if ( defined($mode) ) { $CurrentMode = $mode }
+    elsif ( $_[0] =~ /^\d/ ) { $CurrentMode = $_[0] }
     else { croak("Unknown terminal mode `$_[0]'"); }
+    SetReadMode($CurrentMode, $fh);
 }
 
 sub normalizehandle
@@ -522,11 +530,11 @@ elsif ( &blockoptions() & 8 )    # Use Win32
     eval <<'DONE';
 	sub ReadKey {
 	  my($File) = normalizehandle((@_>1?$_[1]:\*STDIN));
-		if ($_[0]) {
+        if ($_[0] || $CurrentMode >= 3) {
 			Win32PeekChar($File, $_[0]);
-		} else {
-			getc $File;
-		}
+        } else {
+        	getc $File;
+        }
 		#if ($_[0]!=0) {return undef if !Win32PeekChar($File, $_[0])};
 		#getc $File;
 	}
