@@ -1537,6 +1537,36 @@ int pollfile(PerlIO *file,double delay)
 
 */
 
+typedef struct {
+    int repeatCount;
+    int vKey;
+    int vScan;
+    int ascii;
+    int control;
+} win32_key_event_t;
+
+#define KEY_PUSH(I, K) { events[I].repeatCount = 1; events[I].ascii = K; }
+#define KEY_PUSH3(K1, K2, K3) \
+    do { \
+             eventCount = 0;            \
+             KEY_PUSH(2, K1);           \
+             KEY_PUSH(1, K2);           \
+             KEY_PUSH(0, K3);           \
+             eventCount = 3;            \
+             goto again;                \
+    } while (0)
+
+#define KEY_PUSH4(K1, K2, K3, K4) \
+    do { \
+             eventCount = 0;            \
+             KEY_PUSH(3, K1);           \
+             KEY_PUSH(2, K2);           \
+             KEY_PUSH(1, K3);           \
+             KEY_PUSH(0, K4);           \
+             eventCount = 4;            \
+             goto again;                \
+    } while (0)
+
 int Win32PeekChar(PerlIO *file,double delay,char *key)
 {
 	int handle;
@@ -1544,8 +1574,15 @@ int Win32PeekChar(PerlIO *file,double delay,char *key)
 	INPUT_RECORD record;
 	DWORD readRecords;
 
+#if 0
 	static int keyCount = 0;
 	static char lastKey = 0;
+#endif
+
+#define MAX_EVENTS 4
+    static int eventCount = 0;
+    static win32_key_event_t events[MAX_EVENTS];
+    int keyCount;
 
 	file = STDIN;
 
@@ -1554,11 +1591,24 @@ int Win32PeekChar(PerlIO *file,double delay,char *key)
 
 
 again:
+#if 0
 	if (keyCount > 0) {
 		keyCount--;
 		*key = lastKey;
 	    return TRUE;
 	}
+#endif
+
+    /* printf("eventCount: %d\n", eventCount); */
+    if (eventCount) {
+        /* printf("key %d; repeatCount %d\n", *key, events[eventCount - 1].repeatCount); */
+        *key = events[eventCount - 1].ascii;
+        events[eventCount - 1].repeatCount--;
+        if (events[eventCount - 1].repeatCount <= 0) {
+            eventCount--;
+        }
+        return TRUE;
+    }
 
 	if (delay > 0) {
 		if (WaitForSingleObject(whnd, delay * 1000.0) != WAIT_OBJECT_0)
@@ -1569,24 +1619,57 @@ again:
 
 	if (delay != 0) {
 		PeekConsoleInput(whnd, &record, 1, &readRecords);
-		if (readRecords == 0)
+		if (readRecords == 0) {
 			return(FALSE);
+        }
 	}
 
 	ReadConsoleInput(whnd, &record, 1, &readRecords);
 	switch(record.EventType)
    {
     case KEY_EVENT:
-		/*printf("\nkeyDown = %d, repeat = %d, vKey = %d, vScan = %d, ASCII = %d, Control = %d\n",
+		/* printf("\nkeyDown = %d, repeat = %d, vKey = %d, vScan = %d, ASCII = %d, Control = %d\n",
 			record.Event.KeyEvent.bKeyDown,
 			record.Event.KeyEvent.wRepeatCount,
 			record.Event.KeyEvent.wVirtualKeyCode,
 			record.Event.KeyEvent.wVirtualScanCode,
 			record.Event.KeyEvent.uChar.AsciiChar,
-			record.Event.KeyEvent.dwControlKeyState);*/
+			record.Event.KeyEvent.dwControlKeyState); */
 
          if (record.Event.KeyEvent.bKeyDown == FALSE)
             goto again;                        /* throw away KeyUp events */
+
+         if (record.Event.KeyEvent.wVirtualKeyCode == 38) { /* up */
+             KEY_PUSH3(27, 91, 65);
+         }
+         if (record.Event.KeyEvent.wVirtualKeyCode == 40) { /* down */
+             KEY_PUSH3(27, 91, 66);
+         }
+         if (record.Event.KeyEvent.wVirtualKeyCode == 39) { /* right */
+             KEY_PUSH3(27, 91, 67);
+         }
+         if (record.Event.KeyEvent.wVirtualKeyCode == 37) { /* left */
+             KEY_PUSH3(27, 91, 68);
+         }
+         if (record.Event.KeyEvent.wVirtualKeyCode == 33) { /* page up */
+             KEY_PUSH3(27, 79, 121);
+         }
+         if (record.Event.KeyEvent.wVirtualKeyCode == 34) { /* page down */
+             KEY_PUSH3(27, 79, 115);
+         }
+         if (record.Event.KeyEvent.wVirtualKeyCode == 36) { /* home */
+             KEY_PUSH4(27, 91, 49, 126);
+         }
+         if (record.Event.KeyEvent.wVirtualKeyCode == 35) { /* end */
+             KEY_PUSH4(27, 91, 52, 126);
+         }
+         if (record.Event.KeyEvent.wVirtualKeyCode == 45) { /* insert */
+             KEY_PUSH4(27, 91, 50, 126);
+         }
+         if (record.Event.KeyEvent.wVirtualKeyCode == 46) { /* delete */
+             KEY_PUSH4(27, 91, 51, 126);
+         }
+
          if (record.Event.KeyEvent.wVirtualKeyCode == 16
          ||  record.Event.KeyEvent.wVirtualKeyCode == 17
          ||  record.Event.KeyEvent.wVirtualKeyCode == 18
@@ -1602,8 +1685,14 @@ again:
          break;
    }
 
- *key = lastKey = record.Event.KeyEvent.uChar.AsciiChar; 
+ *key = record.Event.KeyEvent.uChar.AsciiChar; 
  keyCount--;
+
+ if (keyCount) {
+     events[0].repeatCount = keyCount;
+     events[0].ascii = *key;
+     eventCount = 1;
+ }
  
  return(TRUE);
 

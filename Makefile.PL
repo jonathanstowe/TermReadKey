@@ -1,5 +1,3 @@
-# Term::ReadKey Makefile.PL Version 2.18
-# $Id: Makefile.PL,v 2.22 2006/01/13 13:49:10 jonathan Exp $
 
 use ExtUtils::MakeMaker;
 use Carp;
@@ -67,4 +65,4 @@ sub MY::pure_site_install
        
     $new .= "\n\t./register_module Your::Module";
     return $new;
- }
+}
