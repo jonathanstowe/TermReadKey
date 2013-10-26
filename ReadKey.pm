@@ -386,10 +386,11 @@ sub GetTerminalSize
         push( @fail, "stty program" );
     }
 
-    if ( @results < 4 )
+    if ( @results != 4 )
     {
-        die "Unable to get Terminal Size."
+        warn "Unable to get Terminal Size."
           . join( "", map( " The $_ didn't work.", @fail ) );
+	return undef;
     }
 
     @results;
