@@ -1,10 +1,26 @@
- Term::ReadKey 2.30 - Change terminal modes, and perform non-blocking reads.
+ Term::ReadKey 2.31 - Change terminal modes, and perform non-blocking reads.
 
  Copyright (C) 1994-1999 Kenneth Albanowski. 
-               2001-2005 Jonathan Stowe and others
+               2001-2013 Jonathan Stowe and others
+
+This package is dual licensed.  You can either choose to license it under
+the original terms which were:
 
  Unlimited distribution and/or modification is allowed as long as this 
  copyright notice remains intact.
+
+Or the standard Perl terms:
+
+  This module is free software; you can redistribute it and/or modify it
+  under the terms of the Artistic License. For details, see the full
+  text of the license in the file "Artistic" that should have been provided
+  with the version of perl you are using.
+
+  This program is distributed in the hope that it will be useful, but
+  without any warranty; without even the implied warranty of merchantability
+  or fitness for a particular purpose.
+
+
 
 This module, ReadKey, provides ioctl control for terminals and Win32
 consoles so the input modes can be changed (thus allowing reads of a single

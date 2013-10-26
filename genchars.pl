@@ -170,7 +170,6 @@ XS(XS_Term__ReadKey_GetControlChars)
 #endif
 			croak(\"Unable to read terminal settings in GetControlChars\");
 		else {
-			int i;
 			EXTEND(sp,MAXCC*2);		".join('',map("
 #if defined($values[$_]) && ($values[$_] < LEGALMAXCC)	"."
 PUSHs(sv_2mortal(newSVpv(cc_names[$_],strlen(cc_names[$_])))); /* $possible{$values[$_]} */
