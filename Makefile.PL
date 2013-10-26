@@ -9,7 +9,18 @@ if( $mm_version < 3.5 ) {
 
 &WriteMakefile(
 	NAME         => 'Term::ReadKey',
-	DISTNAME     => 'TermReadKey',
+	DISTNAME     => 'Term-ReadKey',
+    LICENSE      => 'perl',
+    META_MERGE => {
+        'meta-spec' => { version => 2 },
+        resources => {
+            repository => {
+                type => 'git',
+                url  => 'https://github.com/jonathanstowe/Term-ReadKey.git',
+                web  => 'https://github.com/jonathanstowe/Term-ReadKey',
+            },
+        },
+    },
 	VERSION_FROM => 'ReadKey.pm',
         XSPROTOARG   => '-noprototypes',
 	PM => { "ReadKey.pm" => '$(INST_LIBDIR)/ReadKey.pm'},
