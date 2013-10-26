@@ -367,6 +367,27 @@ sub GetTerminalSize
 
     if ( @results < 4 )
     {
+        my ($prog) = "stty size";
+
+        my ($stty) = scalar(`$prog 2>/dev/null`);
+        if (
+            defined $stty
+            and (  $stty =~ /(\d+) (\d+)/ )
+          )
+        {
+            $results[0] = $2;
+			$results[1] = $1;
+			@results[ 2, 3 ] = ( 0, 0 );
+        }
+        else
+        {
+            @results = ();
+        }
+        push( @fail, "stty program" );
+    }
+
+    if ( @results < 4 )
+    {
         die "Unable to get Terminal Size."
           . join( "", map( " The $_ didn't work.", @fail ) );
     }
