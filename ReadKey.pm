@@ -247,7 +247,7 @@ bootstrap Term::ReadKey;
 
 # Should we use LINES and COLUMNS to try and get the terminal size?
 # Change this to zero if you have systems where these are commonly
-# set to erroneous values. (But if either are nero zero, they won't be
+# set to erroneous values. (But if either are near zero, they won't be
 # used anyhow.)
 
 $UseEnv = 1;
@@ -334,7 +334,7 @@ sub GetTerminalSize
     {
         my ($prog) = "resize";
 
-        # Workaround for Solaris path sillyness
+        # Workaround for Solaris path silliness
         if ( -f "/usr/openwin/bin/resize" ) {
             $prog = "/usr/openwin/bin/resize";
         }
