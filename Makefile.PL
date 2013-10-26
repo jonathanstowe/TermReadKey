@@ -16,8 +16,8 @@ if( $mm_version < 3.5 ) {
         resources => {
             repository => {
                 type => 'git',
-                url  => 'https://github.com/jonathanstowe/Term-ReadKey.git',
-                web  => 'https://github.com/jonathanstowe/Term-ReadKey',
+                url  => 'https://github.com/jonathanstowe/TermReadKey.git',
+                web  => 'https://github.com/jonathanstowe/TermReadKey',
             },
         },
     },

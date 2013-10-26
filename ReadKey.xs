@@ -1892,6 +1892,8 @@ SetTerminalSize(width,height,xpix,ypix,file=STDIN)
 	{
 		RETVAL=SetTerminalSize(file,width,height,xpix,ypix);
 	}
+	OUTPUT:
+		RETVAL
 
 void
 GetSpeed(file=STDIN)
