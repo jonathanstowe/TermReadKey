@@ -129,13 +129,18 @@ pairs and will modify the control character settings.
 Note that it is entirely possible that there are portability problems with
 the routines in ReadKey.xs. If you find any problems, including compilation
 failures, or control characters not supported by Set/GetControlChars,
-_please_ tell me about them, by mailing the maintainer at jns@gellyfish.com,
+_please_ tell me about them, by mailing the maintainer at jns@gellyfish.co.uk,
  or lastly contacting perl5-porters@perl.org. Any problems
 will get fixed if at all possible, but that's not going to happen if I don't
 know about them.
+
+The code is available at https://github.com/jonathanstowe/TermReadKey so
+as ever patches are kindly welcomed, especially for platforms such as 
+Windows that I am unable to test on.
 
 Oh, you may also be interested in the Configure.pm module. It provides tools
 to make porting stuff easier -- calling the compiler, finding headers, etc.
 It contains documentation inside it, and you are welcome to use it in your
 own modules. If you make use of it, I'd be grateful for a message sent to
 the above address.
+
