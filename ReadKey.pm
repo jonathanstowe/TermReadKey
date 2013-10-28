@@ -1,4 +1,3 @@
-
 package Term::ReadKey;
 
 =head1 NAME
@@ -210,7 +209,7 @@ Kenneth Albanowski <kjahds@kjahds.com>
 
 Currently maintained by Jonathan Stowe <jns@gellyfish.co.uk>
 
-=item SUPPORT
+=head1 SUPPORT
 
 The code is maintained at 
 
@@ -219,7 +218,7 @@ The code is maintained at
 Please feel free to fork and suggest patches.
 
 
-=item LICENSE
+=head1 LICENSE
 
 Prior to the 2.31 release the license statement was:
 
