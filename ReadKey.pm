@@ -6,13 +6,13 @@ Term::ReadKey - A perl module for simple terminal control
 
 =head1 SYNOPSIS
 
-	use Term::ReadKey;
-	ReadMode 4; # Turn off controls keys
-	while (not defined ($key = ReadKey(-1))) {
-		# No key yet
-	}
-	print "Get key $key\n";
-	ReadMode 0; # Reset tty mode before exiting
+    use Term::ReadKey;
+    ReadMode 4; # Turn off controls keys
+    while (not defined ($key = ReadKey(-1))) {
+        # No key yet
+    }
+    print "Get key $key\n";
+    ReadMode 0; # Reset tty mode before exiting
 
 =head1 DESCRIPTION
 
@@ -28,30 +28,34 @@ Added handling of arrows, page up/down, home/end, insert/delete keys
 under Win32. These keys emit xterm-compatible sequences.
 Works with Term::ReadLine::Perl.
 
-=over 8
+=over 4
 
 =item ReadMode MODE [, Filehandle]
 
-Takes an integer argument, which can currently be one of the following 
-values:
+Takes an integer argument or a string synonym (case insensitive), which
+can currently be one of the following values:
 
-    0    Restore original settings.
-    1    Change to cooked mode.
-    2	 Change to cooked mode with echo off. 
-          (Good for passwords)
-    3    Change to cbreak mode.
-    4    Change to raw mode.
-    5    Change to ultra-raw mode. 
-          (LF to CR/LF translation turned off) 
-          
-    Or, you may use the synonyms:
-    
-    restore
-    normal
-    noecho
-    cbreak
-    raw
-    ultra-raw
+    INT   SYNONYM    DESCRIPTION
+
+    0    'restore'   Restore original settings.
+
+    1    'normal'    Change to what is commonly the default mode,
+                     echo on, buffered, signals enabled, Xon/Xoff
+                     possibly enabled, and 8-bit mode possibly disabled.
+
+    2    'noecho'    Same as 1, just with echo off. Nice for
+                     reading passwords.
+
+    3    'cbreak'    Echo off, unbuffered, signals enabled, Xon/Xoff
+                     possibly enabled, and 8-bit mode possibly enabled.
+
+    4    'raw'       Echo off, unbuffered, signals disabled, Xon/Xoff
+                     disabled, and 8-bit mode possibly disabled.
+
+    5    'ultra-raw' Echo off, unbuffered, signals disabled, Xon/Xoff 
+                     disabled, 8-bit mode enabled if parity permits,
+                     and CR to CR/LF translation turned off. 
+
 
 These functions are automatically applied to the STDIN handle if no
 other handle is supplied. Modes 0 and 5 have some special properties
@@ -61,20 +65,27 @@ cause the next ReadMode call to save a new set of default settings. Mode
 possible, parity will be disabled (only if not being used by the terminal,
 however. It is no different from mode 4 under Windows.)
 
+If you just need to read a key at a time, then modes 3 or 4 are probably
+sufficient. Mode 4 is a tad more flexible, but needs a bit more work to
+control. If you use ReadMode 3, then you should install a SIGINT or END
+handler to reset the terminal (via ReadMode 0) if the user aborts the
+program via C<^C>. (For any mode, an END handler consisting of "ReadMode 0"
+is actually a good idea.)
+
 If you are executing another program that may be changing the terminal mode,
 you will either want to say
 
-    ReadMode 1
+    ReadMode 1;             # same as ReadMode 'normal'
     system('someprogram');
     ReadMode 1;
-    
+
 which resets the settings after the program has run, or:
 
     $somemode=1;
-    ReadMode 0;
+    ReadMode 0;             # same as ReadMode 'restore'
     system('someprogram');
     ReadMode 1;
-    
+
 which records any changes the program may have made, before resetting the
 mode.
 
@@ -87,22 +98,28 @@ values:
     -1   Perform a non-blocked read
     >0	 Perform a timed read
 
-(If the filehandle is not supplied, it will default to STDIN.) If there is
+If the filehandle is not supplied, it will default to STDIN. If there is
 nothing waiting in the buffer during a non-blocked read, then undef will be
-returned. Note that if the OS does not provide any known mechanism for
-non-blocking reads, then a C<ReadKey -1> can die with a fatal error. This
-will hopefully not be common.
+returned.  In most situations, you will probably want to use C<ReadKey -1>.
+
+I<NOTE> that if the OS does not provide any known mechanism for non-blocking
+reads, then a C<ReadKey -1> can die with a fatal error. This will hopefully
+not be common.
 
 If MODE is greater then zero, then ReadKey will use it as a timeout value in
 seconds (fractional seconds are allowed), and won't return C<undef> until
-that time expires. (Note, again, that some OS's may not support this timeout
-behaviour.) If MODE is less then zero, then this is treated as a timeout
+that time expires.
+
+I<NOTE>, again, that some OS's may not support this timeout behaviour.
+
+If MODE is less then zero, then this is treated as a timeout
 of zero, and thus will return immediately if no character is waiting. A MODE
 of zero, however, will act like a normal getc.
 
-There are currently some limitations with this call under Windows. It may be
-possible that non-blocking reads will fail when reading repeating keys from
-more then one console.
+I<NOTE>, there are currently some limitations with this call under Windows.
+It may be possible that non-blocking reads will fail when reading repeating
+keys from more then one console.
+
 
 =item ReadLine MODE [, Filehandle]
 
@@ -114,16 +131,19 @@ values:
     >0	 Perform a timed read
 
 If there is nothing waiting in the buffer during a non-blocked read, then
-undef will be returned. Note that if the OS does not provide any known
-mechanism for non-blocking reads, then a C<ReadLine 1> can die with a fatal
-error. This will hopefully not be common. Note that a non-blocking test is
-only performed for the first character in the line, not the entire line.
-This call will probably B<not> do what you assume, especially with
-ReadMode's higher then 1. For example, pressing Space and then Backspace
-would appear to leave you where you started, but any timeouts would now
-be suspended.
+undef will be returned.
 
-This call is currently not available under Windows.
+I<NOTE>, that if the OS does not provide any known mechanism for
+non-blocking reads, then a C<ReadLine 1> can die with a fatal
+error. This will hopefully not be common.
+
+I<NOTE> that a non-blocking test is only performed for the first character
+in the line, not the entire line.  This call will probably B<not> do what
+you assume, especially with C<ReadMode> MODE values higher then 1. For
+example, pressing Space and then Backspace would appear to leave you
+where you started, but any timeouts would now be suspended.
+
+B<This call is currently not available under Windows>.
 
 =item GetTerminalSize [Filehandle]
 
@@ -132,18 +152,20 @@ element array containing: the width of the terminal in characters, the
 height of the terminal in character, the width in pixels, and the height in
 pixels. (The pixel size will only be valid in some environments.)
 
-Under Windows, this function must be called with an "output" filehandle,
-such as STDOUT, or a handle opened to CONOUT$.
+I<NOTE>, under Windows, this function must be called with an B<output>
+filehandle, such as C<STDOUT>, or a handle opened to C<CONOUT$>.
 
 =item SetTerminalSize WIDTH,HEIGHT,XPIX,YPIX [, Filehandle]
 
-Return -1 on failure, 0 otherwise. Note that this terminal size is only for
-B<informative> value, and changing the size via this mechanism will B<not>
-change the size of the screen. For example, XTerm uses a call like this when
+Return -1 on failure, 0 otherwise.
+
+I<NOTE> that this terminal size is only for B<informative> value, and
+changing the size via this mechanism will B<not> change the size of
+the screen. For example, XTerm uses a call like this when
 it resizes the screen. If any of the new measurements vary from the old, the
 OS will probably send a SIGWINCH signal to anything reading that tty or pty.
 
-This call does not work under Windows.
+B<This call does not work under Windows>.
 
 =item GetSpeeds [, Filehandle]
 
@@ -151,13 +173,17 @@ Returns either an empty array if the operation is unsupported, or a two
 value array containing the terminal in and out speeds, in B<decimal>. E.g,
 an in speed of 9600 baud and an out speed of 4800 baud would be returned as
 (9600,4800). Note that currently the in and out speeds will always be
-identical in some OS's. No speeds are reported under Windows.
+identical in some OS's.
+
+B<No speeds are reported under Windows>.
 
 =item GetControlChars [, Filehandle]
 
 Returns an array containing key/value pairs suitable for a hash. The pairs
 consist of a key, the name of the control character/signal, and the value
-of that character, as a single character. This call does nothing under Windows.
+of that character, as a single character.
+
+B<This call does nothing under Windows>.
 
 Each key will be an entry from the following list:
 
@@ -199,7 +225,7 @@ settings. The list of valid names is easily available via
 	%cchars = GetControlChars();
 	@cnames = keys %cchars;
 
-This call does nothing under Windows.
+B<This call does nothing under Windows>.
 
 =back
 
@@ -249,7 +275,7 @@ choose to license this under the standard Perl license:
 
 use vars qw($VERSION);
 
-$VERSION = '2.31';
+$VERSION = '2.32';
 
 require Exporter;
 require AutoLoader;
@@ -288,7 +314,7 @@ $UseEnv = 1;
 
 $CurrentMode = 0;
 
-%modes = (
+%modes = (                            # lowercase is canonical
     original    => 0,
     restore     => 0,
     normal      => 1,
@@ -300,7 +326,7 @@ $CurrentMode = 0;
 
 sub ReadMode
 {
-    my ($mode) = $modes{ $_[0] };
+    my ($mode) = $modes{ lc $_[0] };  # lowercase is canonical
     my ($fh) = normalizehandle( ( @_ > 1 ? $_[1] : \*STDIN ) );
     if ( defined($mode) ) { $CurrentMode = $mode }
     elsif ( $_[0] =~ /^\d/ ) { $CurrentMode = $_[0] }
