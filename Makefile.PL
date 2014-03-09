@@ -12,6 +12,10 @@ if( $mm_version < 3.5 ) {
 	DISTNAME     => 'TermReadKey',
     LICENSE      => 'perl',
     META_MERGE => {
+        no_index  => {
+            file  => [qw(Configure.pm)],
+            package  => [qw(Configure)],
+        },
         'meta-spec' => { version => 2 },
         resources => {
             repository => {

@@ -14,7 +14,9 @@
 # Todo: clean up redudant code in CPP, Compile, Link, and Execute
 #
 
-package Configure;
+# for when no_index is not enough
+package 
+Configure;
 
 use strict;
 

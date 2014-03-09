@@ -1,12 +1,23 @@
---- #YAML:1.0
-name:                TermReadKey
-version:             2.30.01
-abstract:            ~
-license:             ~
-author:              ~
-generated_by:        ExtUtils::MakeMaker version 6.42_01
-distribution_type:   module
-requires:     
+---
+abstract: unknown
+author:
+  - unknown
+build_requires: {}
+dynamic_config: 1
+generated_by: 'ExtUtils::MakeMaker version 6.64, CPAN::Meta::Converter version 2.120921'
+license: perl
 meta-spec:
-    url:     http://module-build.sourceforge.net/META-spec-v1.3.html
-    version: 1.3
+  url: http://module-build.sourceforge.net/META-spec-v1.4.html
+  version: 1.4
+name: TermReadKey
+no_index:
+  directory:
+    - t
+    - inc
+  file:
+    - Configure.pm
+  package:
+    - Configure
+resources:
+  repository: https://github.com/jonathanstowe/TermReadKey.git
+version: 2.32
