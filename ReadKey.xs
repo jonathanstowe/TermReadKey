@@ -1397,8 +1397,8 @@ void ReadMode(PerlIO *file,int mode)
 	/*warn("Mode set to %d.\n",mode);*/
 
 	if( firsttime ) {
-		(void*)hv_delete(filehash,(char*)&handle,sizeof(int),0);
-		(void*)hv_delete(modehash,(char*)&handle,sizeof(int),0);
+		(void)hv_delete(filehash,(char*)&handle,sizeof(int),0);
+		(void)hv_delete(modehash,(char*)&handle,sizeof(int),0);
 	} else {
 		if(!hv_store(modehash,(char*)&handle,sizeof(int),
 			newSViv(mode),0))
