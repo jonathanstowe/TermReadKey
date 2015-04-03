@@ -390,7 +390,7 @@ sub GetTerminalSize
         push( @fail, "COLUMNS and LINES environment variables" );
     }
 
-    if ( @results < 4 )
+    if ( @results < 4 && $^O ne 'MSWin32')
     {
         my ($prog) = "resize";
 
@@ -425,7 +425,7 @@ sub GetTerminalSize
         push( @fail, "resize program" );
     }
 
-    if ( @results < 4 )
+    if ( @results < 4 && $^O ne 'MSWin32' )
     {
         my ($prog) = "stty size";
 
