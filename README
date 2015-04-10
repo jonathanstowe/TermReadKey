@@ -1,12 +1,12 @@
  Term::ReadKey 2.32 - Change terminal modes, and perform non-blocking reads.
 
- Copyright (C) 1994-1999 Kenneth Albanowski. 
+ Copyright (C) 1994-1999 Kenneth Albanowski.
                2001-2014 Jonathan Stowe and others
 
 This package is dual licensed.  You can either choose to license it under
 the original terms which were:
 
- Unlimited distribution and/or modification is allowed as long as this 
+ Unlimited distribution and/or modification is allowed as long as this
  copyright notice remains intact.
 
 Or the standard Perl terms:
@@ -40,7 +40,7 @@ interactive tests whilst confirming that the module has built correctly
 and has a good chance of working correctly cannot determine whether the
 effect as observed on the screen is correct so you might want to run:
 
-   perl -Mblib test.pl interactive
+   perl -Mblib example/test.pl interactive
 
 before you run 'make install'.
 
@@ -67,7 +67,7 @@ character is waiting, please call it with -1, instead of 1. Positive
 arguments now indicate a timeout, so 1 would wait a second before timing
 out.
 
-As older versions will accept -1, it is reccomended to change all code 
+As older versions will accept -1, it is reccomended to change all code
 that uses ReadMode.
 
 
@@ -78,21 +78,21 @@ should be one of the following:
 	0: (Reset) Restore original settings.
 
 	1: (Cooked) Change to what is commonly the default mode, echo on,
-           buffered, signals enabled, Xon/Xoff possibly enabled, and 8-bit mode 
+           buffered, signals enabled, Xon/Xoff possibly enabled, and 8-bit mode
 	   possibly disabled.
 
-	2: (Cooked-Invisible) Same as 1, just with echo off. Nice for reading 
+	2: (Cooked-Invisible) Same as 1, just with echo off. Nice for reading
            passwords.
 
-	3: (CBreak) Echo off, unbuffered, signals enabled, Xon/Xoff possibly 
+	3: (CBreak) Echo off, unbuffered, signals enabled, Xon/Xoff possibly
            enabled, and 8-bit mode possibly enabled.
 
-	4: (Raw) Echo off, unbuffered, signals disabled, Xon/Xoff disabled, 
+	4: (Raw) Echo off, unbuffered, signals disabled, Xon/Xoff disabled,
            and 8-bit mode possibly disabled.
 
-	5: (Really-Raw) Echo off, unbuffered, signals disabled, Xon/Xoff 
-           disabled, 8-bit mode enabled if parity permits, and CR to CR/LF 
-           translation turned off. 
+	5: (Really-Raw) Echo off, unbuffered, signals disabled, Xon/Xoff
+           disabled, 8-bit mode enabled if parity permits, and CR to CR/LF
+           translation turned off.
 
 If you just need to read a key at a time, then modes 3 or 4 are probably
 sufficient. Mode 4 is a tad more flexible, but needs a bit more work to
@@ -135,7 +135,7 @@ will get fixed if at all possible, but that's not going to happen if I don't
 know about them.
 
 The code is available at https://github.com/jonathanstowe/TermReadKey so
-as ever patches are kindly welcomed, especially for platforms such as 
+as ever patches are kindly welcomed, especially for platforms such as
 Windows that I am unable to test on.
 
 Oh, you may also be interested in the Configure.pm module. It provides tools
@@ -143,4 +143,3 @@ to make porting stuff easier -- calling the compiler, finding headers, etc.
 It contains documentation inside it, and you are welcome to use it in your
 own modules. If you make use of it, I'd be grateful for a message sent to
 the above address.
-
