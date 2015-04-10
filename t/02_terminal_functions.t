@@ -2,7 +2,7 @@ use strict;
 use warnings;
 
 
-use Test::More tests => 4;
+use Test::More tests => 7;
 
 use Term::ReadKey;
 use Fcntl;
@@ -67,4 +67,20 @@ SKIP:
     };
     is($@, '', "Check TerminalSize OUT");
 
+    eval {
+        my @speeds = GetSpeed();
+    };
+    is($@, '', "Check Terminal communication speed");
+
+    my %chars;
+    eval {
+        %chars = GetControlChars(IN);
+    };
+    is($@, '', "Validate GetControlChars function");
+
+    my %origchars = %chars;
+    eval {
+        SetControlChars( %origchars, IN );
+    };
+    is($@, '', "Validate SetControlChars function");
 }
