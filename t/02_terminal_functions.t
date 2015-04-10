@@ -2,7 +2,7 @@ use strict;
 use warnings;
 
 
-use Test::More tests => 3;
+use Test::More tests => 4;
 
 use Term::ReadKey;
 use Fcntl;
@@ -42,7 +42,7 @@ SKIP:
     if ( ( $size1 eq $size2 ) && ( $size2 eq $size3 ) && ( $size3 eq $size4 ) ){
         $size_result = 1;
     }
-    is($size_result, 1, "Comparing TerminalSize");
+    is($size_result, 1, "Comparing TerminalSize IN");
 
     my $usable_terminal=0;
     for (my $i = 1; $i < 6; $i++){
@@ -61,4 +61,10 @@ SKIP:
         push( @modes, "Win32" )     if &Term::ReadKey::blockoptions() & 8;
     };
     is($@, '', "Check non-blocking read");
+
+    eval {
+        my @size = GetTerminalSize(OUT);
+    };
+    is($@, '', "Check TerminalSize OUT");
+
 }
