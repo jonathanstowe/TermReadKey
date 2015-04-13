@@ -1,5 +1,6 @@
 Configure.pm
 MANIFEST
+MANIFEST.SKIP
 Makefile.PL
 README
 ReadKey.pm
