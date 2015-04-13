@@ -6,6 +6,8 @@ ReadKey.pm
 ReadKey.xs
 genchars.pl
 ppport.h
-test.pl
+example/test.pl
+t/01_basic.t
+t/02_terminal_functions.t
 Changes
 META.yml                                Module meta-data (added by MakeMaker)

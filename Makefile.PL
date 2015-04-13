@@ -30,7 +30,10 @@ if( $mm_version < 3.5 ) {
 	PM => { "ReadKey.pm" => '$(INST_LIBDIR)/ReadKey.pm'},
 
 	'dist' => { COMPRESS=>"gzip", SUFFIX=>"gz" },
-        
+  "test" => {
+    "TESTS" => "t/*.t"
+  }
+
 # Uncomment these to allow testing of sgtty under Linux. Not needed normally.
 #	INC => "-I/usr/include/bsd",
 #	LIBS => "-lbsd"
@@ -64,7 +67,7 @@ ReadKey.c: cchars.h
 sub MY::test {
 	my $self = shift;
 	$_ = $self->MM::test();
-	s/test.pl/-w test.pl/;
+	s#example/test.pl#-w example/test.pl#;
 	$_;
 }
 
@@ -77,7 +80,7 @@ sub MY::pure_site_install
 {
     my $self = shift;
     my $new = $self->MM::test();
-       
+
     $new .= "\n\t./register_module Your::Module";
     return $new;
 }
