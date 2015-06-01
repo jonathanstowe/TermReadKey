@@ -98,7 +98,7 @@ print CCHARS "#define HAVE_SYS_POLL_H\n" if CheckHeader("sys/poll.h");
 
 print "\n";
 if(1) {
-	@values = sort { $possible{$a} cmp $possible{$b} } keys %possible;
+	@values = sort { $possible{$a} cmp $possible{$b} or $a cmp $b } keys %possible;
 
 	print "Writing termio/termios section of cchars.h... ";
 	print CCHARS "
@@ -303,7 +303,7 @@ if($SGTTY) {
 	print "Checking symbols\n";
 
 
-	for $c (keys %possible2) {
+	for $c (sort keys %possible2) {
 
 #		if($tchars and !report("
 ##include <sgtty.h>
