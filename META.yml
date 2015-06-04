@@ -2,13 +2,16 @@
 abstract: unknown
 author:
   - unknown
-build_requires: {}
+build_requires:
+  ExtUtils::MakeMaker: '0'
+configure_requires:
+  ExtUtils::MakeMaker: '0'
 dynamic_config: 1
-generated_by: 'ExtUtils::MakeMaker version 6.64, CPAN::Meta::Converter version 2.120921'
+generated_by: 'ExtUtils::MakeMaker version 6.98, CPAN::Meta::Converter version 2.142060'
 license: perl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
-  version: 1.4
+  version: '1.4'
 name: TermReadKey
 no_index:
   directory:
@@ -20,4 +23,4 @@ no_index:
     - Configure
 resources:
   repository: https://github.com/jonathanstowe/TermReadKey.git
-version: 2.32
+version: '2.33'

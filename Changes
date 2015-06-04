@@ -1,3 +1,87 @@
+2015-06-04  Jonathan Stowe <jns+git@gellyfish.co.uk>
+
+	* .gitignore: Add .bs file to .gitignore
+
+2015-06-04  Jonathan Stowe <jns@gellyfish.co.uk>
+
+	* : Merge pull request #6 from ntyni/master Make genchars.pl output reproducible by sorting hash keys
+
+2015-04-30  Jonathan Stowe <jns+git@gellyfish.co.uk>
+
+	* Makefile.PL: Fix for "[rt.cpan.org #100932] Parallel build fails"
+	from Petr Pisar
+
+2015-04-30  Jonathan Stowe <jns+git@gellyfish.co.uk>
+
+	* MANIFEST.SKIP: Add .git directory to the MANIFEST.SKIP
+
+2015-04-13  Jonathan Stowe <jns+git@gellyfish.co.uk>
+
+	* MANIFEST, MANIFEST.SKIP: Add new artefacts
+
+2015-04-13  Jonathan Stowe <jns+git@gellyfish.co.uk>
+
+	* .travis.yml: Add travis-ci testing
+
+2015-04-13  Jonathan Stowe <jns+git@gellyfish.co.uk>
+
+	* .gitignore: Add .gitignore
+
+2015-04-13  Jonathan Stowe <jns@gellyfish.co.uk>
+
+	* : Merge pull request #5 from
+	sdeseille/Create_T_directory_and_split_test.pl Create t directory and split test.pl
+
+2015-04-11  Sébastien Deseille <sebastien.deseille@gmail.com>
+
+	* README: Update README to reflect the move of test.pl in example
+	subdirectory
+
+2015-04-11  Sébastien Deseille <sebastien.deseille@gmail.com>
+
+	* README: Revert "Update README to reflect the move of test.pl in
+	example subdirectory" This reverts commit 09402dcd68d8d0417e0eb2f9ea0aeaf4b4c72e9a.
+
+2015-04-11  Sébastien Deseille <sebastien.deseille@gmail.com>
+
+	* README: Update README to reflect the move of test.pl in example
+	subdirectory
+
+2015-04-11  Sébastien Deseille <sebastien.deseille@gmail.com>
+
+	* example/test.pl, test.pl: Move test.pl in example's subdirectory
+	in order to keep the possibility to use its interactive mode
+
+2015-04-11  Sébastien Deseille <sebastien.deseille@gmail.com>
+
+	* t/02_terminal_functions.t: Finished to implement all tests from
+	test.pl
+
+2015-04-11  Sébastien Deseille <sebastien.deseille@gmail.com>
+
+	* t/02_terminal_functions.t: Add test to Check TerminalSize OUT
+
+2015-04-11  Sébastien Deseille <sebastien.deseille@gmail.com>
+
+	* t/02_terminal_functions.t: Add test to Check non-blocking read
+
+2015-04-10  Sébastien Deseille <sebastien.deseille@gmail.com>
+
+	* t/02_terminal_functions.t: Add second test about Comparing
+	TerminalSize
+
+2015-04-10  Sébastien Deseille <sebastien.deseille@gmail.com>
+
+	* t/01_basic.t: Add first test to validate module loading
+
+2015-04-03  Jonathan Stowe <jns@gellyfish.co.uk>
+
+	* : Merge pull request #3 from kmx/master no resize, no stty on MS Windows
+
+2014-05-10  Jonathan Stowe <jns+git@gellyfish.co.uk>
+
+	* Changes: Update changes with git2cl (some manual reordering)
+
 2014-05-10  Jonathan Stowe <jns+git@gellyfish.co.uk>
 
 	* Makefile.PL: Makefile.PL more specific
@@ -73,14 +157,6 @@
 	* MANIFEST, Makefile.PL: Added Changes git-svn-id: http://jstowe.googlecode.com/svn/trunk/TermReadKey@74
 	d4a3e428-c23c-0410-a93a-b1ce904c0fb3
 
-2005-01-12  Jonathan Stowe <jns@gellyfish.co.uk>
-
-	* Configure.pm, MANIFEST, META.yml, Makefile.PL, README,
-	ReadKey.pm, ReadKey.xs, genchars.pl, ppport.h, test.pl: import
-	TermReadKey 2.30 from CPAN git-cpan-module:   TermReadKey git-cpan-version:  2.30
-	git-cpan-authorid: JSTOWE git-cpan-file:
-	authors/id/J/JS/JSTOWE/TermReadKey-2.30.tar.gz
-
 2005-01-11  jonathan <jonathan@d4a3e428-c23c-0410-a93a-b1ce904c0fb3>
 
 	* test.pl: Skip tests if /dev/tty for automated testing git-svn-id: http://jstowe.googlecode.com/svn/trunk/TermReadKey@53
@@ -100,6 +176,14 @@
 
 	* Put back in CVS git-svn-id: http://jstowe.googlecode.com/svn/trunk/TermReadKey@19
 	d4a3e428-c23c-0410-a93a-b1ce904c0fb3
+
+2005-01-12  Jonathan Stowe <jns@gellyfish.co.uk>
+
+	* Configure.pm, MANIFEST, META.yml, Makefile.PL, README,
+	ReadKey.pm, ReadKey.xs, genchars.pl, ppport.h, test.pl: import
+	TermReadKey 2.30 from CPAN git-cpan-module:   TermReadKey git-cpan-version:  2.30
+	git-cpan-authorid: JSTOWE git-cpan-file:
+	authors/id/J/JS/JSTOWE/TermReadKey-2.30.tar.gz
 
 2002-07-28  Jonathan Stowe <jns@gellyfish.co.uk>
 

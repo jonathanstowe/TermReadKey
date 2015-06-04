@@ -275,7 +275,7 @@ choose to license this under the standard Perl license:
 
 use vars qw($VERSION);
 
-$VERSION = '2.32';
+$VERSION = '2.33';
 
 require Exporter;
 require AutoLoader;
