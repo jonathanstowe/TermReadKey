@@ -1,5 +1,9 @@
 2015-06-04  Jonathan Stowe <jns+git@gellyfish.co.uk>
 
+	* .gitignore, Changes, META.yml, README, ReadKey.pm: Up version
+
+2015-06-04  Jonathan Stowe <jns+git@gellyfish.co.uk>
+
 	* .gitignore: Add .bs file to .gitignore
 
 2015-06-04  Jonathan Stowe <jns@gellyfish.co.uk>
