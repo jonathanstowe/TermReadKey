@@ -6,4 +6,5 @@ ReadKey.o
 blib/
 cchars.h
 pm_to_blib
+*.bs
 TermReadKey-*.tar.gz
