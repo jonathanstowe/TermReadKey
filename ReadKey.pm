@@ -167,7 +167,7 @@ OS will probably send a SIGWINCH signal to anything reading that tty or pty.
 
 B<This call does not work under Windows>.
 
-=item GetSpeeds [, Filehandle]
+=item GetSpeed [, Filehandle]
 
 Returns either an empty array if the operation is unsupported, or a two
 value array containing the terminal in and out speeds, in B<decimal>. E.g,

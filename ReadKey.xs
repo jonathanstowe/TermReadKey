@@ -1904,9 +1904,13 @@ GetSpeed(file=STDIN)
 	PPCODE:
 	{
 		I32 in,out;
+/*
+ *    experimentally relaxed for 
+ *    https://rt.cpan.org/Ticket/Display.html?id=88050
 		if(items!=0) {
 			croak("Usage: Term::ReadKey::GetSpeed()");
 		}
+*/
 		if(getspeed(file,&in,&out)) {
 			/* Failure */
 			ST( 0) = sv_newmortal();
