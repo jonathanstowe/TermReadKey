@@ -2,10 +2,19 @@ use strict;
 use warnings;
 
 
-use Test::More tests => 7;
+use Test::More ;
+
+if ( -t STDIN ) {
+   plan tests => 7;
+}
+else {
+   plan skip_all => "Need a terminal to test";
+}
 
 use Term::ReadKey;
 use Fcntl;
+
+$| = 1;
 
 if ( not exists $ENV{COLUMNS} ){
     $ENV{COLUMNS} = 80;
