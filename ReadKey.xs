@@ -16,7 +16,10 @@
  Written by Kenneth Albanowski on Thu Oct  6 11:42:20 EDT 1994
  Contact at kjahds@kjahds.com or CIS:70705,126
 
- Maintained by Jonathan Stowe <jns@gellyfish.com>
+ Maintained by Jonathan Stowe <jns@gellyfish.co.uk>
+
+ The below captures the history prior to it being in full time version
+ control:
 
  $Id: ReadKey.xs,v 2.22 2005/01/11 21:15:17 jonathan Exp $
 
