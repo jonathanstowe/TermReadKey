@@ -38,7 +38,7 @@ SKIP:
             }
         }
     };
-    skip( 'Because Term::ReadKey need at least a tty to be useful', 1 ) if $@;
+    skip( 'Because Term::ReadKey need at least a tty to be useful', 7 ) if $@;
     *IN = *IN;    # Make single-use warning go away
     $|  = 1;
     no strict "subs";
