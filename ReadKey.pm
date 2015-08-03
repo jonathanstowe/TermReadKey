@@ -1,5 +1,8 @@
 package Term::ReadKey;
 
+use strict;
+use warnings;
+
 =head1 NAME
 
 Term::ReadKey - A perl module for simple terminal control
@@ -282,6 +285,8 @@ require AutoLoader;
 require DynaLoader;
 use Carp;
 
+use vars qw(@ISA @EXPORT_OK @EXPORT);
+
 @ISA = qw(Exporter AutoLoader DynaLoader);
 
 # Items to export into callers namespace by default
@@ -309,6 +314,8 @@ bootstrap Term::ReadKey;
 # Change this to zero if you have systems where these are commonly
 # set to erroneous values. (But if either are near zero, they won't be
 # used anyhow.)
+
+use vars qw($UseEnv $CurrentMode %modes);
 
 $UseEnv = 1;
 
