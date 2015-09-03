@@ -448,8 +448,8 @@ sub GetTerminalSize
 
     if ( @results != 4 )
     {
-        warn "Unable to get Terminal Size."
-          . join( "", map( " The $_ didn't work.", @fail ) );
+        carp("Unable to get Terminal Size."
+          . join( "", map( " The $_ didn't work.", @fail ) ));
 	return undef;
     }
 
