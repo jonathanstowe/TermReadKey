@@ -129,9 +129,15 @@ if(1) {
 # define LEGALMAXCC 126
 #endif
 
+#ifdef XS_INTERNAL
+#  define TRTXS(a) XS_INTERNAL(a)
+#else
+#  define TRTXS(a) XS(a)
+#endif
+
 #if defined(CC_TERMIO) || defined(CC_TERMIOS)
 
-char	* cc_names[] = {	".join('',map("
+STATIC const char	* const cc_names[] = {	".join('',map("
 #if defined($_) && ($_ < LEGALMAXCC)
 	\"$possible{$_}\",	"."
 #else				"."
@@ -139,13 +145,13 @@ char	* cc_names[] = {	".join('',map("
 #endif				", @values ))."
 };
 
-const int MAXCC = 0	",join('',map("
+STATIC const int MAXCC = 0	",join('',map("
 #if defined($_)  && ($_ < LEGALMAXCC)
 	+1		/* $possible{$_} */
 #endif			", @values ))."
 	;
 
-XS(XS_Term__ReadKey_GetControlChars)
+TRTXS(XS_Term__ReadKey_GetControlChars)
 {
 	dXSARGS;
 	if (items < 0 || items > 1) {
@@ -182,7 +188,7 @@ PUSHs(sv_2mortal(newSVpv((char*)&s.c_cc[$values[$_]],1))); 	"."
 	}
 }
 
-XS(XS_Term__ReadKey_SetControlChars)
+TRTXS(XS_Term__ReadKey_SetControlChars)
 {
 	dXSARGS;
 	/*if ((items % 2) != 0) {
@@ -363,13 +369,13 @@ print "Writing sgtty section of cchars.h... ";
 $struct
 #define TermStructure struct termstruct
 
-char	* cc_names[] = {	".join('',map("
+STATIC const char	* const cc_names[] = {	".join('',map("
 	\"$_\",			", @values ))."
 };
 
 #define MAXCC	". ($#values+1)."
 
-XS(XS_Term__ReadKey_GetControlChars)
+TRTXS(XS_Term__ReadKey_GetControlChars)
 {
 	dXSARGS;
 	if (items < 0 || items > 1) {
@@ -401,7 +407,7 @@ PUSHs(sv_2mortal(newSVpv(&s.$billy{$values[$_]},1))); 	",0..$#values))."
 	}
 }
 
-XS(XS_Term__ReadKey_SetControlChars)
+TRTXS(XS_Term__ReadKey_SetControlChars)
 {
 	dXSARGS;
 	/*if ((items % 2) != 0) {
@@ -452,7 +458,7 @@ XS(XS_Term__ReadKey_SetControlChars)
 
 #if !defined(CC_TERMIO) && !defined(CC_TERMIOS) && !defined(CC_SGTTY)
 #define TermStructure int
-XS(XS_Term__ReadKey_GetControlChars)
+TRTXS(XS_Term__ReadKey_GetControlChars)
 {
 	dXSARGS;
 	if (items <0 || items>1) {
@@ -466,7 +472,7 @@ XS(XS_Term__ReadKey_GetControlChars)
 	}
 }
 
-XS(XS_Term__ReadKey_SetControlChars)
+TRTXS(XS_Term__ReadKey_SetControlChars)
 {
 	dXSARGS;
 	if (items < 0 || items > 1) {
