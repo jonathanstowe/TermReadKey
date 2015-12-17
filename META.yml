@@ -1,13 +1,14 @@
 ---
-abstract: unknown
+abstract: 'Change terminal modes, and perform non-blocking reads.'
 author:
-  - unknown
+  - 'Kenneth Albanowski'
+  - 'Jonathan Stowe'
 build_requires:
   ExtUtils::MakeMaker: '0'
 configure_requires:
   ExtUtils::MakeMaker: '0'
-dynamic_config: 1
-generated_by: 'ExtUtils::MakeMaker version 6.98, CPAN::Meta::Converter version 2.142060'
+dynamic_config: 0
+generated_by: 'ExtUtils::MakeMaker version 7.1, CPAN::Meta::Converter version 2.150005'
 license: perl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
@@ -24,3 +25,4 @@ no_index:
 resources:
   repository: https://github.com/jonathanstowe/TermReadKey.git
 version: '2.33'
+x_serialization_backend: 'CPAN::Meta::YAML version 0.016'

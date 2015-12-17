@@ -8,9 +8,11 @@ if( $mm_version < 3.5 ) {
 }
 
 &WriteMakefile(
-	NAME         => 'Term::ReadKey',
-	DISTNAME     => 'TermReadKey',
-    LICENSE      => 'perl',
+    NAME       => 'Term::ReadKey',
+    DISTNAME   => 'TermReadKey',
+    LICENSE    => 'perl',
+    ABSTRACT   => 'Change terminal modes, and perform non-blocking reads.',
+    AUTHOR     => ['Kenneth Albanowski','Jonathan Stowe'],
     META_MERGE => {
         no_index  => {
             file  => [qw(Configure.pm)],
@@ -25,11 +27,11 @@ if( $mm_version < 3.5 ) {
             },
         },
     },
-	VERSION_FROM => 'ReadKey.pm',
-        XSPROTOARG   => '-noprototypes',
-	PM => { "ReadKey.pm" => '$(INST_LIBDIR)/ReadKey.pm'},
+    VERSION_FROM => 'ReadKey.pm',
+    XSPROTOARG   => '-noprototypes',
+    PM           => { "ReadKey.pm" => '$(INST_LIBDIR)/ReadKey.pm'},
 
-	'dist' => { COMPRESS=>"gzip", SUFFIX=>"gz" },
+  'dist' => { COMPRESS=>"gzip", SUFFIX=>"gz" },
   "test" => {
     "TESTS" => "t/*.t"
   }
