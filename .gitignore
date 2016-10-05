@@ -1,6 +1,7 @@
 MYMETA.json
 MYMETA.yml
 Makefile
+ReadKey.pm
 ReadKey.c
 ReadKey.o
 blib/
