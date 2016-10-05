@@ -1,13 +1,13 @@
 #!/usr/bin/perl
-
 #
 # $Id: genchars.pl,v 2.22 2005/01/11 21:15:17 jonathan Exp $
 #
 ##############################
-$version="1.97";
+$version="1.98";
 ##############################
 use Config;
 
+BEGIN { push @INC, "."; }
 use Configure;
 
 #sub report {
@@ -88,8 +88,10 @@ open(CCHARS,">cchars.h") || die "Fatal error, Unable to write to cchars.h!";
 );
 
 print CCHARS "
+/* -*- buffer-read-only: t -*-
 
-/* Written by genchars.pl version $version */
+  This file is auto-generated. ***ANY*** changes here will be lost.
+  Written by genchars.pl version $version */
 
 ";
 
@@ -260,7 +262,7 @@ if(@ARGV) { # If any argument is supplied on the command-line don't check sgtty
 }  else {
 	print "Checking for sgtty...\n";
 
-	$SGTTY = CheckStructure "sgttyb","sgtty.h";
+	$SGTTY = CheckStructure("sgttyb","sgtty.h");
 #	$SGTTY = !Compile("
 ##include <sgtty.h>
 #struct sgttyb s;
@@ -288,7 +290,7 @@ if($SGTTY) {
 
 	print "Checking sgtty...\n";
 
-	$tchars = CheckStructure "tchars","sgtty.h";
+	$tchars = CheckStructure("tchars","sgtty.h");
 #	$tchars = !report(	'
 ##include <sgtty.h>
 #struct tchars t;  
@@ -296,7 +298,7 @@ if($SGTTY) {
 #');
 	print "	tchars structure found.\n" if $tchars;
 
-	$ltchars = CheckStructure "ltchars","sgtty.h";
+	$ltchars = CheckStructure("ltchars","sgtty.h");
 #	$ltchars = !report(	'
 ##include <sgtty.h>
 #struct ltchars t;  
@@ -484,6 +486,7 @@ TRTXS(XS_Term__ReadKey_SetControlChars)
 
 #endif
 
+/* ex: set ro: */
 ";
 
 print "Done.\n";
