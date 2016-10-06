@@ -309,7 +309,7 @@ choose to license this under the standard Perl license:
 
 use vars qw($VERSION);
 
-$VERSION = '2.34';
+$VERSION = '2.35';
 
 require Exporter;
 require DynaLoader;

@@ -1,3 +1,7 @@
+2.35	 - 2016-10-06
+
+	* Use FULLPERLRUNINST to run the ReadKey_pm.PL to get the 'blib'
+
 2.34     - 2016-10-06
 
 	* Fix GetTerminalSize() argument handling
