@@ -7,7 +7,7 @@
           harmonize formatting
         * Configure.pm, genchars.pl: reformatting, support -Dfortify_inc and cperl.
         * Makefile.PL: support ReadKey_pm.PL, add SIGN, fix pure_site_install,
-          fix realclean
+          support dual-life, fix realclean
         * META.yml: removed, auto-generated with make dist
 
 2015-06-04  Jonathan Stowe <jns+git@gellyfish.co.uk>

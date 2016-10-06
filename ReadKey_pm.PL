@@ -496,6 +496,7 @@ sub GetTerminalSize
 
 close OUT;
 # preload the XS module needed for the blockoptions() expansions below
+# does not work with miniperl
 package Term::ReadKey;
 require DynaLoader;
 our @ISA = qw(DynaLoader);

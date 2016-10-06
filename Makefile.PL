@@ -59,6 +59,14 @@ ReadKey.c: cchars.h
     $_
 }
 
+# The template needs DynaLoader. don't use miniperl (dual-life only)
+sub MY::processPL {
+    my $self = shift;
+    $_ = $self->MM::processPL();
+    s/\$\(PERLRUN\)/\$(FULLPERLRUN)/;
+    $_
+}
+
 sub MY::test {
     my $self = shift;
     $_ = $self->MM::test();
