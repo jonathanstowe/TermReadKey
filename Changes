@@ -5,7 +5,8 @@
           demand-load Carp,
           remove unneeded AutoLoader,
           harmonize formatting
-        * Configure.pm, genchars.pl: reformatting, support -Dfortify_inc and cperl.
+        * Configure.pm, genchars.pl: reformatting, support -Dfortify_inc and cperl,
+          support make -s silence.
         * Makefile.PL: support ReadKey_pm.PL, add SIGN, fix pure_site_install,
           support dual-life, fix realclean
         * META.yml: removed, auto-generated with make dist
