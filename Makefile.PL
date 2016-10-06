@@ -27,12 +27,12 @@ if ( $mm_version < 3.5 ) {
             },
         },
     },
-    VERSION_FROM => 'ReadKey_pm.PL',
-    XSPROTOARG   => '-noprototypes',
-    PL_FILES	 => { 'ReadKey_pm.PL' => 'ReadKey.pm' },
-    PM           => { 'ReadKey.pm' => '$(INST_ARCHLIBDIR)/ReadKey.pm' },
-    clean        => { FILES => 'cchars.h ReadKey.pm' },
-    SIGN => 1,
+    VERSION_FROM    => 'ReadKey_pm.PL',
+    XSPROTOARG      => '-noprototypes',
+    PL_FILES	    => { 'ReadKey_pm.PL' => 'ReadKey.pm' },
+    PM              => { 'ReadKey.pm' => '$(INST_ARCHLIBDIR)/ReadKey.pm' },
+    clean           => { FILES => 'cchars.h ReadKey.pm' },
+    SIGN            => 1,
 
     # Uncomment these to allow testing of sgtty under Linux. Not needed normally.
     # INC => "-I/usr/include/bsd",
