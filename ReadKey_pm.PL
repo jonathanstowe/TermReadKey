@@ -377,6 +377,7 @@ sub normalizehandle
 {
     my ($file) = @_; # allows fake signature optimization
 
+    no strict;
     #	print "Handle = $file\n";
     if ( ref($file) ) { return $file; }    # Reference is fine
 
@@ -389,7 +390,8 @@ sub normalizehandle
 
 sub GetTerminalSize
 {
-    my $file = normalizehandle( ( @_ > 1 ? $_[1] : \*STDOUT ) );
+    my $file = normalizehandle( ( @_ > 0 ? $_[0] : \*STDOUT ) );
+
     my (@results, @fail);
 
     if ( &termsizeoptions() & 1 )                       # VIO
