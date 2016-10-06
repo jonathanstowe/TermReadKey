@@ -42,13 +42,12 @@ SKIP:
     *IN = *IN;    # Make single-use warning go away
     $|  = 1;
     no strict "subs";
-    my $size1 = join( ",", GetTerminalSize( \IN ) );
     my $size2 = join( ",", GetTerminalSize("IN") );
     my $size3 = join( ",", GetTerminalSize(*IN) );
     my $size4 = join( ",", GetTerminalSize( \*IN ) );
 
     my $size_result=0;
-    if ( ( $size1 eq $size2 ) && ( $size2 eq $size3 ) && ( $size3 eq $size4 ) ){
+    if ( ( $size2 eq $size3 ) && ( $size3 eq $size4 ) ){
         $size_result = 1;
     }
     is($size_result, 1, "Comparing TerminalSize IN");
