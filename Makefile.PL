@@ -63,7 +63,7 @@ ReadKey.c: cchars.h
 sub MY::processPL {
     my $self = shift;
     $_ = $self->MM::processPL();
-    s/\$\(PERLRUN\)/\$(FULLPERLRUN)/;
+    s/\$\(PERLRUN\)/\$(FULLPERLRUNINST)/;
     $_
 }
 
