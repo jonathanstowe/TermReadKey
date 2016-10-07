@@ -3,8 +3,8 @@ use ExtUtils::MakeMaker;
 use Carp;
 
 my $mm_version = $ExtUtils::MakeMaker::VERSION || $ExtUtils::MakeMaker::Version;
-if ( $mm_version < 6.42 ) {
-    croak("Sorry, but MakeMaker 6.42 or better is needed to build this package.");
+if ( $mm_version < 6.58 ) {
+    croak("Sorry, but MakeMaker 6.58 or better is needed to build this package.");
 }
 
 &WriteMakefile(
@@ -14,9 +14,12 @@ if ( $mm_version < 6.42 ) {
     ABSTRACT   => 'Change terminal modes, and perform non-blocking reads.',
     AUTHOR     => ['Kenneth Albanowski','Jonathan Stowe'],
     CONFIGURE_REQUIRES => {
-        'ExtUtils::MakeMaker' => 6.42,
+        'ExtUtils::MakeMaker' => 6.58,
     },
-    META_ADD => {
+    BUILD_REQUIRES  =>  {
+        'ExtUtils::MakeMaker' => 6.58,
+    },
+    META_ADD => { # needs to _ADD because I want over-ride the dynamic_config
         dynamic_config => 1,
         no_index  => {
             file     => [ qw(Configure.pm) ],
