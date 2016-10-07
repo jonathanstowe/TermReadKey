@@ -3,8 +3,8 @@ use ExtUtils::MakeMaker;
 use Carp;
 
 my $mm_version = $ExtUtils::MakeMaker::VERSION || $ExtUtils::MakeMaker::Version;
-if ( $mm_version < 3.5 ) {
-    croak("Sorry, but MakeMaker 3.5 or better is needed to build this package.");
+if ( $mm_version < 6.42 ) {
+    croak("Sorry, but MakeMaker 6.42 or better is needed to build this package.");
 }
 
 &WriteMakefile(
@@ -13,10 +13,20 @@ if ( $mm_version < 3.5 ) {
     LICENSE    => 'perl',
     ABSTRACT   => 'Change terminal modes, and perform non-blocking reads.',
     AUTHOR     => ['Kenneth Albanowski','Jonathan Stowe'],
-    META_MERGE => {
+    CONFIGURE_REQUIRES => {
+        'ExtUtils::MakeMaker' => 6.42,
+    },
+    META_ADD => {
+        dynamic_config => 1,
         no_index  => {
             file     => [ qw(Configure.pm) ],
             package  => [ qw(Configure) ],
+        },
+        provides  => {
+            'Term::ReadKey' => {
+                file    => 'META.yml',
+                version => '2.37',
+            },
         },
         'meta-spec' => { version => 2 },
         resources => {
