@@ -1,5 +1,7 @@
 #! perl
 
+package Term::ReadKey;
+
 use Config;
 use File::Basename qw(&basename &dirname);
 use File::Spec;
@@ -309,7 +311,7 @@ choose to license this under the standard Perl license:
 
 use vars qw($VERSION);
 
-$VERSION = '2.35';
+$VERSION = '2.36';
 
 require Exporter;
 require DynaLoader;
