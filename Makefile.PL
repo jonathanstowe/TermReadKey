@@ -1,3 +1,5 @@
+use strict;
+use warnings;
 
 use ExtUtils::MakeMaker;
 use Carp;
@@ -7,7 +9,7 @@ if ( $mm_version < 6.58 ) {
     croak("Sorry, but MakeMaker 6.58 or better is needed to build this package.");
 }
 
-&WriteMakefile(
+WriteMakefile(
     NAME       => 'Term::ReadKey',
     DISTNAME   => 'TermReadKey',
     LICENSE    => 'perl',
@@ -69,7 +71,7 @@ distcc: genchars.pl
 ReadKey.c: cchars.h
 
 ";
-    $_
+    return $_;
 }
 
 # The template needs DynaLoader. don't use miniperl (dual-life only)
@@ -78,18 +80,18 @@ sub MY::processPL {
     $_ = $self->MM::processPL();
     s/ReadKey.pm :: ReadKey_pm.PL/ReadKey.pm :: ReadKey_pm.PL dynamic/;
     s/\$\(PERLRUN\)/\$(FULLPERLRUNINST)/;
-    $_
+    return $_;
 }
 
 sub MY::test {
     my $self = shift;
     $_ = $self->MM::test();
     s#example/test.pl#-w example/test.pl#;
-    $_
+    return $_;
 }
 
 sub MY::test_interactive {
-    "Fooo"
+    return "Fooo";
 }
 
 sub MY::pure_site_install {
@@ -97,5 +99,5 @@ sub MY::pure_site_install {
     my $new = $self->MM::test();
 
     $new .= "\n\t./register_module Term::ReadKey";
-    $new
+    return $new;
 }
