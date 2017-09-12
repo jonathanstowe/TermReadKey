@@ -68,7 +68,7 @@ sgtty cchars.h: genchars.pl
 distcc: genchars.pl
 	\$(PERLRUN) genchars.pl dist
 
-ReadKey.c: cchars.h
+ReadKey\$(OBJ_EXT): ReadKey.c cchars.h
 
 ";
     return $_;
