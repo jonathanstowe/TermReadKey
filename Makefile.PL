@@ -29,7 +29,7 @@ WriteMakefile(
         },
         provides  => {
             'Term::ReadKey' => {
-                file    => 'META.yml',
+                file    => 'ReadKey.pm.PL',
                 version => '2.37',
             },
         },
@@ -42,9 +42,9 @@ WriteMakefile(
             },
         },
     },
-    VERSION_FROM    => 'ReadKey_pm.PL',
+    VERSION_FROM    => 'ReadKey.pm.PL',
     XSPROTOARG      => '-noprototypes',
-    PL_FILES	    => { 'ReadKey_pm.PL' => 'ReadKey.pm' },
+    PL_FILES	    => { 'ReadKey.pm.PL' => 'ReadKey.pm' },
     PM              => { 'ReadKey.pm' => '$(INST_ARCHLIBDIR)/ReadKey.pm' },
     clean           => { FILES => 'cchars.h ReadKey.pm' },
     SIGN            => 1,
@@ -78,7 +78,7 @@ ReadKey\$(OBJ_EXT): ReadKey.c cchars.h
 sub MY::processPL {
     my $self = shift;
     $_ = $self->MM::processPL();
-    s/ReadKey.pm :: ReadKey_pm.PL/ReadKey.pm :: ReadKey_pm.PL dynamic/;
+    s/ReadKey.pm :: ReadKey.pm.PL/ReadKey.pm :: ReadKey.pm.PL dynamic/;
     s/\$\(PERLRUN\)/\$(FULLPERLRUNINST)/;
     return $_;
 }
