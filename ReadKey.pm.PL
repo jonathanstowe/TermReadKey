@@ -6,7 +6,7 @@ package Term::ReadKey;
 # and in the Makefile.PL
 use vars qw($VERSION);
 
-$VERSION = '2.37';
+$VERSION = '2.38';
 
 use Config;
 use File::Basename qw(&basename &dirname);
@@ -317,7 +317,7 @@ choose to license this under the standard Perl license:
 
 use vars qw($VERSION);
 
-$VERSION = '2.37';
+$VERSION = '2.38';
 
 require Exporter;
 require DynaLoader;

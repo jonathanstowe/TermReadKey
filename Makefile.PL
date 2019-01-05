@@ -30,7 +30,7 @@ WriteMakefile(
         provides  => {
             'Term::ReadKey' => {
                 file    => 'ReadKey.pm.PL',
-                version => '2.37',
+                version => '2.38',
             },
         },
         'meta-spec' => { version => 2 },
