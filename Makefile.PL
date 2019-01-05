@@ -4,7 +4,7 @@ use warnings;
 use ExtUtils::MakeMaker;
 use Carp;
 
-my $mm_version = $ExtUtils::MakeMaker::VERSION || $ExtUtils::MakeMaker::Version;
+my $mm_version = $ExtUtils::MakeMaker::VERSION;
 if ( $mm_version < 6.58 ) {
     croak("Sorry, but MakeMaker 6.58 or better is needed to build this package.");
 }
