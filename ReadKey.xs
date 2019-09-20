@@ -503,7 +503,7 @@ int GetTermSizeWin32(pTHX_ PerlIO *file,int *retwidth,int *retheight,int *xpix,i
 			*retwidth = info.dwMaximumWindowSize.X; 
 			/*info.srWindow.Right - info.srWindow.Left;*/
 		if (retheight)
-			*retheight = info.srWindow.Bottom - info.srWindow.Top;
+			*retheight = info.srWindow.Bottom + 1 - info.srWindow.Top;
 		if (xpix)
 			*xpix = 0;
 		if (ypix)
