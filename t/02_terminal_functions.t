@@ -13,6 +13,7 @@ else {
 
 use Term::ReadKey;
 use Fcntl;
+use POSIX ();
 
 $| = 1;
 
@@ -86,9 +87,18 @@ SKIP:
     };
     is($@, '', "Validate GetControlChars function");
 
-    my %origchars = %chars;
-    eval {
-        SetControlChars( %origchars, IN );
-    };
-    is($@, '', "Validate SetControlChars function");
+    SKIP:
+    {
+        my $foreground = eval {
+            my $foreground_pgid = POSIX::tcgetpgrp(fileno IN);
+            my $current_pgid = getpgrp;
+            return $foreground_pgid == $current_pgid;
+        };
+        skip "Run SetControlChars test only if the test is running as a foreground process", 1 if !$foreground;
+        my %origchars = %chars;
+        eval {
+            SetControlChars( %origchars, IN );
+        };
+        is($@, '', "Validate SetControlChars function");
+    }
 }
