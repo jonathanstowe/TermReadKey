@@ -496,7 +496,8 @@ int GetTermSizeWin32(pTHX_ PerlIO *file,int *retwidth,int *retheight,int *xpix,i
 	HANDLE whnd = (HANDLE)_get_osfhandle(handle);
 	CONSOLE_SCREEN_BUFFER_INFO info;
 
-	if (GetConsoleScreenBufferInfo(whnd, &info)) {
+	if (GetConsoleScreenBufferInfo(whnd, &info) ||
+	    GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &info)) {
 		/* Logic: return maximum possible screen width, but return
 		   only currently selected height */
 		if (retwidth)
